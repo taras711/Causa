@@ -226,8 +226,29 @@ Datové konektory a ERP, monitorovací případy a Firemní rentgen, multi-tenan
 ## 7. Definice hotovo (DoD) pro každou fázi
 
 - Kód je naprogramován, pročten a kompiluje/ běží.
-- Unit testy a evaluační testy pro danou fázi passent v CI.
+- Unit testy a evaluační testy pro danou fázi passent v CI (pytest, tests/unit/, tests/eval/).
 - Dokumentace aktualizována (architektura, API, uživatelská příručka).
 - Riziková matice aktualizována.
 - Zpětná vazba z design partnera (pokud適用uje) zapracována.
+
+### Stav testovacího harnessu (Měsíce 2–3)
+
+Implementováno v rámci walking skeletonu:
+
+| Soubor | Testy | Popis |
+|--------|-------|-------|
+| `tests/unit/test_case.py` | 7 | Case model, CaseStatus, CaseStep, claims, recommendations |
+| `tests/unit/test_ledger.py` | 7 | Append-only ledger, tabulka, dotazování podle case_id |
+| `tests/unit/test_engine.py` | 6 | WorkflowEngine, checkpointy, obnova po selhání, ledgerové události |
+| `tests/unit/test_settings.py` | 3 | Načtení modelové konfigurace z configs/models.yaml |
+| `tests/unit/test_agent_schemas.py` | 8 | Pydantic schémata všech pěti agentů, validace rozsahů |
+| `tests/unit/test_framer_mocked.py` | 2 | FramerAgent s mocknutým Ollama |
+| `tests/unit/test_diagnostician_mocked.py` | 2 | DiagnosticianAgent s mocknutým Ollama |
+| `tests/unit/test_evidence_retriever.py` | 2 | EvidenceRetrieverAgent s/bez retrieveru |
+| `tests/unit/test_solution_designer_mocked.py` | 2 | SolutionDesignerAgent s mocknutým Ollama |
+| `tests/unit/test_verifier_mocked.py` | 2 | VerifierAgent s mocknutým Ollama |
+| `tests/eval/test_golden_a3.py` | 6 | Zlaté A3 případy (Framer, Diagnostician, SolutionDesigner, Verifier, engine) |
+| `tests/eval/conftest.py` | – | Fixtures: 2 zlaté případy (golden-a3-001, golden-a3-002) |
+
+**Celkem:** 48 testů (36 unit + 12 eval), všechny procházejí.
 

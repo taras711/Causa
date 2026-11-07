@@ -63,6 +63,32 @@ docker-compose -f infrastructure/docker-compose.yml up -d
 5. **Měsíce 9–10 – automatizace a zpevnění:** kurační fronty, učící smyčka, telemetrie, zálohy, bezpečnost
 6. **Měsíce 11–12 – pilot a rezerva:** pilot s design partnerem, rezerva 20–25 % času
 
+## Testování
+
+Projekt obsahuje evaluační harness se unit a evaluačními testy:
+
+```bash
+# Spustit všechny testy
+python -m pytest tests/ -v
+
+# Pouze unit testy
+python -m pytest tests/unit/ -v -m unit
+
+# Pouze evaluační testy (zlaté A3 případy)
+python -m pytest tests/eval/ -v -m eval
+
+# Testy s pokrytím kódu (vyžaduje pytest-cov)
+python -m pytest tests/ --cov=src --cov-report=html
+```
+
+Testy jsou rozděleny do podsložek:
+- `tests/unit/` – unit testy (Case model, Ledger, WorkflowEngine, Settings, schémata agentů, mocknuté agenty)
+- `tests/eval/` – evaluační testy se zlatými A3 případy (conftest + test_golden_a3)
+- `tests/integration/` – připraveno pro integrační testy
+- `tests/security/` – připraveno pro bezpečnostní testy
+
+Markery pytest: `unit`, `integration`, `eval`, `security`.
+
 ## Dokumentace
 
 - `docs/BaseModel – strategický plán a revidovaná architektura.md` – strategický plán
