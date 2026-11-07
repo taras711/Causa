@@ -138,10 +138,13 @@ class A3Ingestor:
         """Ingestuje soubor z disku (přípona určuje formát)."""
 
         file_path = Path(path)
-        if not file_path.exists():
+        if not file_path.exists() or not file_path.is_file():
             return IngestionResult(errors=[f"Soubor nenalezen: {file_path}"])
 
-        content = file_path.read_text(encoding="utf-8")
+        try:
+            content = file_path.read_text(encoding="utf-8")
+        except (OSError, UnicodeDecodeError) as exc:
+            return IngestionResult(errors=[f"Chyba při čtení souboru: {exc}"])
         source = str(file_path)
         title = file_path.stem
 

@@ -31,6 +31,9 @@ class VerificationLayer:
           - evidence: volitelné odkazy na důkazy
           - face_model_id: volitelné ID FaceModelu pro verifikaci proti vzoru
         """
+        if not isinstance(claim, dict):
+            claim = {}
+
         text = claim.get("text", "")
         source = claim.get("source", "assumption")
         evidence = claim.get("evidence")
@@ -106,6 +109,8 @@ class VerificationLayer:
         best_score = 0.0
 
         for fm in self.face_models:
+            if not isinstance(fm, dict):
+                continue
             fm_id = str(fm.get("model_id", fm.get("id", "")))
             if face_model_id is not None and fm_id != face_model_id:
                 continue

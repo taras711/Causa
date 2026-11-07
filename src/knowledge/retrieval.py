@@ -1,7 +1,7 @@
-"""Hybridní retrieval (klíčová slova + sémantika) pro Evidence Retrievera.
+﻿"""HybridnĂ­ retrieval (klĂ­ÄŤovĂˇ slova + sĂ©mantika) pro Evidence Retrievera.
 
-Kombinuje keyword-based vyhledávání s sémantickým vyhledáváním přes Ollama
-embeddings (model nomic-embed-text). Dokumenty jsou trvale uloženy v SQLite.
+Kombinuje keyword-based vyhledĂˇvĂˇnĂ­ s sĂ©mantickĂ˝m vyhledĂˇvĂˇnĂ­m pĹ™es Ollama
+embeddings (model nomic-embed-text). Dokumenty jsou trvale uloĹľeny v SQLite.
 """
 from __future__ import annotations
 
@@ -16,10 +16,10 @@ from src.config.settings import Settings
 
 
 class HybridRetriever:
-    """Hybridní vyhledávání: klíčová slova (BM25-like) + sémantické (embedings).
+    """HybridnĂ­ vyhledĂˇvĂˇnĂ­: klĂ­ÄŤovĂˇ slova (BM25-like) + sĂ©mantickĂ© (embedings).
 
-    Dokumenty jsou indexovány v paměti a trvale uloženy v SQLite.
-    Sémantické skóre se počítá jako kosinová podobnost mezi embeddingem
+    Dokumenty jsou indexovĂˇny v pamÄ›ti a trvale uloĹľeny v SQLite.
+    SĂ©mantickĂ© skĂłre se poÄŤĂ­tĂˇ jako kosinovĂˇ podobnost mezi embeddingem
     dotazu a embeddingem dokumentu.
     """
 
@@ -40,7 +40,7 @@ class HybridRetriever:
         self._documents: list[dict[str, Any]] = []
         self._embeddings: list[list[float]] = []
 
-        # Trvalé úložiště
+        # TrvalĂ© ĂşloĹľiĹˇtÄ›
         if db_path is None:
             db_path = Path("data") / "retrieval.db"
         self.db_path = Path(db_path)
@@ -49,7 +49,7 @@ class HybridRetriever:
         self._load_from_db()
 
     # ------------------------------------------------------------------ #
-    # Databázové operace
+    # DatabĂˇzovĂ© operace
     # ------------------------------------------------------------------ #
 
     def _init_db(self) -> None:
@@ -95,10 +95,10 @@ class HybridRetriever:
                     "title": row[1],
                     "content": row[2],
                     "source": row[3],
-                    "metadata": json.loads(row[4]) if row[4] else {},
+                    "metadata": self._safe_json(row[4]),
                 }
                 self._documents.append(doc)
-                text = (doc.get("title", "") + " " + doc.get("content", "")).lower()
+                text = (str(doc.get("title") or "") + " " + str(doc.get("content") or "")).lower()
                 for word in set(text.split()):
                     self.keyword_index.setdefault(word, []).append(doc)
 
@@ -107,7 +107,10 @@ class HybridRetriever:
                     (row[0],),
                 ).fetchone()
                 if emb_row:
-                    self._embeddings.append(json.loads(emb_row[0]))
+                    try:
+                        self._embeddings.append(json.loads(emb_row[0]))
+                    except (json.JSONDecodeError, TypeError, ValueError):
+                        self._embeddings.append([])
                 else:
                     self._embeddings.append([])
         finally:
@@ -146,7 +149,7 @@ class HybridRetriever:
     # ------------------------------------------------------------------ #
 
     def _embed_text(self, text: str) -> list[float]:
-        """Vypočítá embedding pro daný text přes Ollama embeddings API."""
+        """VypoÄŤĂ­tĂˇ embedding pro danĂ˝ text pĹ™es Ollama embeddings API."""
 
         try:
             response = embeddings(
@@ -156,8 +159,17 @@ class HybridRetriever:
             )
             return response.get("embedding", [])
         except Exception:
-            # V případě chyby vrátíme prázdný vektor (sémantické skóre bude 0)
+            # V pĹ™Ă­padÄ› chyby vrĂˇtĂ­me prĂˇzdnĂ˝ vektor (sĂ©mantickĂ© skĂłre bude 0)
             return []
+
+    @staticmethod
+    def _safe_json(value: Any) -> Any:
+        if not value:
+            return {}
+        try:
+            return json.loads(value)
+        except (json.JSONDecodeError, TypeError, ValueError):
+            return {}
 
     @staticmethod
     def _cosine_similarity(a: list[float], b: list[float]) -> float:
@@ -171,32 +183,42 @@ class HybridRetriever:
         return dot / (norm_a * norm_b)
 
     # ------------------------------------------------------------------ #
-    # Veřejné rozhraní
+    # VeĹ™ejnĂ© rozhranĂ­
     # ------------------------------------------------------------------ #
 
     def add_document(self, doc: dict[str, Any]) -> None:
-        """Přidá dokument do indexu (keyword + sémantický embedding)."""
+        """PĹ™idĂˇ dokument do indexu (keyword + sĂ©mantickĂ˝ embedding)."""
+        if not isinstance(doc, dict):
+            doc = {}
+
+        title = doc.get("title", "")
+        content = doc.get("content", "")
+        title = "" if title is None else str(title)
+        content = "" if content is None else str(content)
+        doc = dict(doc)
+        doc["title"] = title
+        doc["content"] = content
 
         self._documents.append(doc)
-        text = (doc.get("title", "") + " " + doc.get("content", "")).lower()
+        text = (title + " " + content).lower()
         for word in set(text.split()):
             self.keyword_index.setdefault(word, []).append(doc)
 
-        # Vypočítat a uložit embedding
-        embedding_text = doc.get("title", "") + " " + doc.get("content", "")
+        # VypoÄŤĂ­tat a uloĹľit embedding
+        embedding_text = title + " " + content
         embedding = self._embed_text(embedding_text)
         self._embeddings.append(embedding)
 
         try:
             self._persist_document(doc, embedding)
         except Exception:
-            # Databázová chyba by neměla blokovat běh v paměti
+            # DatabĂˇzovĂˇ chyba by nemÄ›la blokovat bÄ›h v pamÄ›ti
             pass
 
     def search(self, query: str, top_k: int = 5) -> list[dict[str, Any]]:
-        """Vyhledá dokumenty kombinací klíčových slov a sémantického skóre.
+        """VyhledĂˇ dokumenty kombinacĂ­ klĂ­ÄŤovĂ˝ch slov a sĂ©mantickĂ©ho skĂłre.
 
-        Váha: 40 % klíčová slova, 60 % sémantická podobnost.
+        VĂˇha: 40 % klĂ­ÄŤovĂˇ slova, 60 % sĂ©mantickĂˇ podobnost.
         """
         return self.hybrid_search(query, top_k=top_k)
 
@@ -207,7 +229,12 @@ class HybridRetriever:
         keyword_weight: float = 0.4,
         semantic_weight: float = 0.6,
     ) -> list[dict[str, Any]]:
-        """Kombinované vyhledávání s nastavitelnými váhami."""
+        """KombinovanĂ© vyhledĂˇvĂˇnĂ­ s nastavitelnĂ˝mi vĂˇhami."""
+        query = "" if query is None else str(query)
+        try:
+            top_k = int(top_k)
+        except (TypeError, ValueError):
+            top_k = 5
 
         query_words = set(query.lower().split())
         query_embedding = self._embed_text(query)
@@ -215,12 +242,12 @@ class HybridRetriever:
         scored: list[tuple[float, dict[str, Any]]] = []
 
         for idx, doc in enumerate(self._documents):
-            # Keyword skóre
-            text = (doc.get("title", "") + " " + doc.get("content", "")).lower()
+            # Keyword skĂłre
+            text = (str(doc.get("title") or "") + " " + str(doc.get("content") or "")).lower()
             matches = sum(1 for w in query_words if w in text)
             keyword_score = matches / len(query_words) if query_words else 0.0
 
-            # Sémantické skóre
+            # SĂ©mantickĂ© skĂłre
             doc_embedding = self._embeddings[idx] if idx < len(self._embeddings) else []
             semantic_score = self._cosine_similarity(query_embedding, doc_embedding)
 
@@ -232,13 +259,13 @@ class HybridRetriever:
         return [doc for _score, doc in scored[:top_k]]
 
     def keyword_search(self, query: str, top_k: int = 5) -> list[dict[str, Any]]:
-        """Pouze keyword-based vyhledávání (zpětná kompatibilita)."""
+        """Pouze keyword-based vyhledĂˇvĂˇnĂ­ (zpÄ›tnĂˇ kompatibilita)."""
 
         query_words = set(query.lower().split())
         scored: list[tuple[float, dict[str, Any]]] = []
 
         for doc in self._documents:
-            text = (doc.get("title", "") + " " + doc.get("content", "")).lower()
+            text = (str(doc.get("title") or "") + " " + str(doc.get("content") or "")).lower()
             matches = sum(1 for w in query_words if w in text)
             if matches > 0:
                 score = matches / len(query_words) if query_words else 0
@@ -248,7 +275,7 @@ class HybridRetriever:
         return [doc for _score, doc in scored[:top_k]]
 
     def semantic_search(self, query: str, top_k: int = 5) -> list[dict[str, Any]]:
-        """Pouze sémantické vyhledávání přes Ollama embeddings."""
+        """Pouze sĂ©mantickĂ© vyhledĂˇvĂˇnĂ­ pĹ™es Ollama embeddings."""
 
         query_embedding = self._embed_text(query)
         scored: list[tuple[float, dict[str, Any]]] = []
