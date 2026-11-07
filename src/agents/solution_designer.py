@@ -30,7 +30,7 @@ class SolutionDesignerAgent(BaseAgent[SolutionDesignerInput, SolutionDesignerOut
             autonomy=AutonomyLevel.L1,
             input_schema=SolutionDesignerInput,
             output_schema=SolutionDesignerOutput,
-            model_name=kwargs.get("model_name", "qwen2.5:14b"),
+            model_role="large",
             ollama_base_url=kwargs.get(
                 "ollama_base_url", "http://localhost:11434"
             ),

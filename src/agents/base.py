@@ -8,10 +8,24 @@ from typing import Any, Generic, TypeVar
 
 from pydantic import BaseModel
 
+from src.config.settings import Settings
+
 InputT = TypeVar("InputT", bound=BaseModel)
 OutputT = TypeVar("OutputT", bound=BaseModel)
 
 logger = structlog.get_logger(__name__)
+
+_settings = Settings()
+
+
+def _get_model_for_role(role: str) -> str:
+    """Vrátí název modelu pro danou roli z jediného zdroje pravdy (configs/models.yaml)."""
+    return {
+        "small": _settings.model_small,
+        "large": _settings.model_large,
+        "complex": _settings.model_complex,
+        "embedding": _settings.model_embedding,
+    }[role]
 
 
 class AutonomyLevel(str, Enum):
@@ -26,6 +40,9 @@ class BaseAgent(ABC, Generic[InputT, OutputT]):
 
     Poskytuje společné rozhraní pro volání LLM přes Ollama,
     validaci vstupu/výstupu a strukturované logování.
+
+    Název modelu se risolvuje z `configs/models.yaml` přes `Settings`,
+    pokud není předán přímo pomocí `model_name`.
     """
 
     def __init__(
@@ -35,14 +52,15 @@ class BaseAgent(ABC, Generic[InputT, OutputT]):
         input_schema: type[BaseModel] | None = None,
         output_schema: type[BaseModel] | None = None,
         ollama_base_url: str = "http://localhost:11434",
-        model_name: str = "qwen2.5:3b",
+        model_name: str | None = None,
+        model_role: str = "small",
     ) -> None:
         self.name = name
         self.autonomy = autonomy
         self.input_schema = input_schema
         self.output_schema = output_schema
         self.ollama_base_url = ollama_base_url
-        self.model_name = model_name
+        self.model_name = model_name or _get_model_for_role(model_role)
 
     @abstractmethod
     async def run(self, input_data: InputT) -> OutputT:

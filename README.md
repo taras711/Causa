@@ -42,8 +42,9 @@ cp .env.example .env
 # Uprav .env podle svého prostředí
 
 # 4. Spusť Ollama a stáhněte modely
-ollama pull qwen2.5:3b
-ollama pull qwen2.5:14b
+ollama pull qwen3.5:4b
+ollama pull qwen3:14b
+ollama pull hf.co/Qwen/Qwen3-14B-GGUF:Q5_K_M
 ollama pull nomic-embed-text
 
 # 5. Spusť aplikaci

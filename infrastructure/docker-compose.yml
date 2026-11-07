@@ -11,7 +11,7 @@ services:
     volumes:
       - ollama:/root/.ollama
     environment:
-      - OLLAMA_MODELS=qwen2.5:3b,qwen2.5:14b,nomic-embed-text
+      - OLLAMA_MODELS=${MODEL_SMALL},${MODEL_LARGE},${MODEL_COMPLEX},${MODEL_EMBEDDING}
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:11434/api/tags"]
@@ -53,9 +53,10 @@ services:
       - CAUSA_ENV=dev
       - DATABASE_URL=postgresql+psycopg2://causa:causa_dev@db:5432/causa
       - OLLAMA_BASE_URL=http://ollama:11434
-      - MODEL_SMALL=qwen2.5:3b
-      - MODEL_LARGE=qwen2.5:14b
-      - MODEL_EMBEDDING=nomic-embed-text
+      - MODEL_SMALL=${MODEL_SMALL}
+      - MODEL_LARGE=${MODEL_LARGE}
+      - MODEL_COMPLEX=${MODEL_COMPLEX}
+      - MODEL_EMBEDDING=${MODEL_EMBEDDING}
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/health"]

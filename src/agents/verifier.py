@@ -30,7 +30,7 @@ class VerifierAgent(BaseAgent[VerifierInput, VerifierOutput]):
             autonomy=AutonomyLevel.L2,
             input_schema=VerifierInput,
             output_schema=VerifierOutput,
-            model_name=kwargs.get("model_name", "qwen2.5:14b"),
+            model_role="large",
             ollama_base_url=kwargs.get(
                 "ollama_base_url", "http://localhost:11434"
             ),

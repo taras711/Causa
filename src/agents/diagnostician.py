@@ -20,7 +20,7 @@ class DiagnosticianOutput(BaseModel):
 class DiagnosticianAgent(BaseAgent[DiagnosticianInput, DiagnosticianOutput]):
     """Analýza příčin (root cause analysis) pro definovaný rozsah případu.
 
-    Používá velký model (qwen2.5:14b) pro uvažování a syntézu.
+    Používá velký model (qwen3:14b) pro uvažování a syntézu.
     """
 
     def __init__(self, **kwargs) -> None:
@@ -29,7 +29,7 @@ class DiagnosticianAgent(BaseAgent[DiagnosticianInput, DiagnosticianOutput]):
             autonomy=AutonomyLevel.L1,
             input_schema=DiagnosticianInput,
             output_schema=DiagnosticianOutput,
-            model_name=kwargs.get("model_name", "qwen2.5:14b"),
+            model_role="large",
             ollama_base_url=kwargs.get(
                 "ollama_base_url", "http://localhost:11434"
             ),

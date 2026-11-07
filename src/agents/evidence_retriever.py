@@ -29,7 +29,7 @@ class EvidenceRetrieverAgent(BaseAgent[EvidenceRetrieverInput, EvidenceRetriever
             autonomy=AutonomyLevel.L2,
             input_schema=EvidenceRetrieverInput,
             output_schema=EvidenceRetrieverOutput,
-            model_name=kwargs.get("model_name", "qwen2.5:3b"),
+            model_role="small",
             ollama_base_url=kwargs.get(
                 "ollama_base_url", "http://localhost:11434"
             ),
