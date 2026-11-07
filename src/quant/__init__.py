@@ -1,0 +1,1 @@
+"""Quant Engine: ROI, citlivost, Monte Carlo, graf předpokladů."""

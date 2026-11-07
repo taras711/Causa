@@ -1,0 +1,1 @@
+"""FastAPI rozhraní (REST endpoints, WebSocket pro stav případu)."""

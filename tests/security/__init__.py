@@ -1,0 +1,1 @@
+"""Bezpečnostní testy (prompt injection, izolace tenantů, šifrování)."""

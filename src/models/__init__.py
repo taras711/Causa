@@ -1,0 +1,1 @@
+"""Datové modely (Case, Claim, Agent, FaceModel, WorkModel, Assumption)."""

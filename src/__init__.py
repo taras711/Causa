@@ -1,0 +1,1 @@
+"""Causa – lokální, auditovatelná platforma pro firemní rozhodování."""

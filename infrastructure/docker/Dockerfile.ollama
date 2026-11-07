@@ -1,0 +1,6 @@
+# Ollama s předem staženými modely
+FROM ollama/ollama:latest
+
+# Modely se stáhnou při prvotním spuštění přes entrypoint
+# viz scripts/run_dev.sh nebo docker-compose.yml volumes
+EXPOSE 11434

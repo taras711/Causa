@@ -1,0 +1,1 @@
+"""Znalostní vrstva: retrieval, ingestion, anonymizace, verifikace."""

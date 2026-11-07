@@ -1,0 +1,44 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+.env
+.env.local
+.venv
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Data (citlivá,never commitovat)
+data/
+*.db
+*.sqlite
+*.sqlite3
+
+# Logs
+*.log
+
+# Build / dist
+dist/
+build/
+*.egg-info/
+node_modules/
+.turbo/
+
+# Konfigurace s citlivými daty
+configs/*local*
+!configs/.example
+
+# ADR (volitelné, generováno)
+docs/adr/*.md.tmp

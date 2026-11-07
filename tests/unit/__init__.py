@@ -1,0 +1,1 @@
+"""Unitové testy."""

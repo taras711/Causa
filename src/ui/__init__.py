@@ -1,0 +1,1 @@
+"""UI vrstva (desktop Tauri / web React+Vite) – placeholder pro pozdější implementaci."""

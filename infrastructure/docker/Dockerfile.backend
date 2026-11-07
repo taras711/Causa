@@ -1,0 +1,22 @@
+# Backend – headless core služba (FastAPI + Python)
+FROM python:3.11-slim
+
+WORKDIR /app
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    gcc \
+    libpq-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY pyproject.toml ./
+RUN pip install --no-cache-dir -e .
+
+COPY src ./src
+COPY configs ./configs
+
+ENV PYTHONPATH=/app
+ENV CAUSA_ENV=dev
+
+EXPOSE 8000
+
+CMD ["python", "-m", "src.api.main"]

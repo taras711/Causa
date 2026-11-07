@@ -1,0 +1,12 @@
+# Sběr metrií (latence, chybovost, využití GPU)
+global:
+  scrape_interval: 15s
+
+scrape_configs:
+  - job_name: "causa-backend"
+    static_configs:
+      - targets: ["backend:8000"]
+
+  - job_name: "ollama"
+    static_configs:
+      - targets: ["ollama:11434"]

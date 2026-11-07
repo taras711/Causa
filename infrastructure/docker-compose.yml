@@ -1,0 +1,54 @@
+# Lokální orchestrace (backend + UI + Ollama + PostgreSQL)
+version: "3.8"
+
+services:
+  ollama:
+    build:
+      context: ..
+      dockerfile: infrastructure/docker/Dockerfile.ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama:/root/.ollama
+    restart: unless-stopped
+
+  db:
+    image: pgvector/pgvector:pg16
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: causa
+      POSTGRES_PASSWORD: causa_dev
+      POSTGRES_DB: causa
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  backend:
+    build:
+      context: ..
+      dockerfile: infrastructure/docker/Dockerfile.backend
+    ports:
+      - "8000:8000"
+    depends_on:
+      - ollama
+      - db
+    environment:
+      - CAUSA_ENV=dev
+      - DATABASE_URL=postgresql+psycopg2://causa:causa_dev@db:5432/causa
+      - OLLAMA_BASE_URL=http://ollama:11434
+    restart: unless-stopped
+
+  ui:
+    build:
+      context: ..
+      dockerfile: infrastructure/docker/Dockerfile.ui
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+volumes:
+  ollama:
+  postgres_data:

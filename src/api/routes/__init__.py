@@ -1,0 +1,1 @@
+"""API endpointy rozdělené podle domény."""

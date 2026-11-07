@@ -1,0 +1,24 @@
+# Konfigurace ingestion a pracovního pipelineu
+
+ingestion:
+  anonymize: true
+  anonymization_rules:
+    - pattern: "\\b[A-ZŽŘŠČČŇ]{2,}[0-9]{3,}\\b"  # example: IČO-like
+      replacement: "[REDACTED_ID]"
+    - pattern: "\\b[\\w.-]+@[\\w.-]+\\.\\w+\\b"  # email
+      replacement: "[REDACTED_EMAIL]"
+
+pipeline:
+  default_steps:
+    - framer
+    - evidence_retriever
+    - diagnostician
+    - solution_designer
+    - verifier
+
+checkpoint_every_step: true
+durable_execution: true
+
+autonomy:
+  default_level: "L1"
+  human_in_the_loop: true

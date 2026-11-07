@@ -1,0 +1,25 @@
+# Produkční konfigurace (server u zákazníka)
+
+app:
+  env: prod
+  log_level: INFO
+  reload: false
+
+database:
+  url: "postgresql+psycopg2://causa:CHANGE_ME@localhost:5432/causa"
+
+ollama:
+  base_url: "http://localhost:11434"
+
+api:
+  host: "0.0.0.0"
+  port: 8000
+
+ui:
+  port: 3000
+
+tenant_id: "{{TENANT_ID}}"
+
+backup:
+  dir: "./data/backups"
+  encryption_key: "{{BACKUP_ENCRYPTION_KEY}}"

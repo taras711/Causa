@@ -1,0 +1,34 @@
+# Konfigurace modelů – model je vždy konfigurace, nikdy předpoklad v kódu.
+# Platí pro vývojový stroj (Ryzen 7 5800X, GPU 16 GB VRAM, 32 GB RAM).
+
+models:
+  small:
+    name: "qwen2.5:3b"
+    role: "small"
+    description: "Klasifikace, extrakce, jednoduché úkony"
+    temperature: 0.1
+    max_tokens: 2048
+    context_window: 16384
+
+  large:
+    name: "qwen2.5:14b"
+    role: "large"
+    description: "Uvažování, syntéza, složitější kroky"
+    temperature: 0.2
+    max_tokens: 4096
+    context_window: 32768
+
+  embedding:
+    name: "nomic-embed-text"
+    role: "embedding"
+    description: "Vektorové embeddingu pro hybridní retrieval"
+    temperature: 0.0
+    max_tokens: 512
+    context_window: 8192
+
+router:
+  default_role: "large"
+  fallback_role: "small"
+
+ollama:
+    base_url: "http://localhost:11434"

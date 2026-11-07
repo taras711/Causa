@@ -1,0 +1,1 @@
+"""Headless core služba: workflow engine, ledger, model případu, router modelů."""

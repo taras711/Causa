@@ -1,0 +1,1 @@
+"""Evaluační testy (zlaté případy, regresní evaluace po změně promptu/modelu)."""

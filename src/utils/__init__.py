@@ -1,0 +1,1 @@
+"""Utility funkce a pomocné třídy."""

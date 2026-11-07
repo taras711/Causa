@@ -1,0 +1,21 @@
+# Vývojová konfigurace
+
+app:
+  env: dev
+  log_level: DEBUG
+  reload: true
+
+database:
+  url: "sqlite:///./data/sqlite/causa.db"
+
+ollama:
+  base_url: "http://localhost:11434"
+
+api:
+  host: "0.0.0.0"
+  port: 8000
+
+ui:
+  port: 3000
+
+tenant_id: default

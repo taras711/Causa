@@ -1,0 +1,1 @@
+"""Typované agenty (funkce se vstupním/výstupním schématem)."""

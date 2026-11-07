@@ -1,0 +1,1 @@
+"""Automatické testy (unit, integrační, evaluační, bezpečnostní)."""
