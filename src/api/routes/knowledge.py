@@ -3,14 +3,39 @@ from __future__ import annotations
 
 from fastapi import APIRouter
 
+from src.knowledge.anonymization import Anonymizer
+from src.knowledge.ingestion import IngestionPipeline
+from src.knowledge.retrieval import HybridRetriever
+from src.knowledge.verification import VerificationLayer
+
 router = APIRouter()
+
+_retriever = HybridRetriever()
+_anonymizer = Anonymizer()
+_ingestion = IngestionPipeline(anonymizer=_anonymizer, retriever=_retriever)
+_verifier = VerificationLayer()
 
 
 @router.get("/")
 async def list_knowledge() -> dict[str, list]:
-    return {"records": []}
+    return {"records": _retriever.get_all()}
 
 
 @router.post("/search")
 async def search(payload: dict) -> dict:
-    return {"results": []}
+    query = payload.get("query", "")
+    top_k = int(payload.get("top_k", 5))
+    results = _retriever.search(query=query, top_k=top_k)
+    return {"query": query, "results": results, "count": len(results)}
+
+
+@router.post("/ingest")
+async def ingest(payload: dict) -> dict:
+    result = await _ingestion.ingest(payload)
+    return result
+
+
+@router.post("/verify")
+async def verify(payload: dict) -> dict:
+    result = _verifier.verify(payload)
+    return result

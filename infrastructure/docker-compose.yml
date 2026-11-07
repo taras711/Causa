@@ -10,7 +10,15 @@ services:
       - "11434:11434"
     volumes:
       - ollama:/root/.ollama
+    environment:
+      - OLLAMA_MODELS=qwen2.5:3b,qwen2.5:14b,nomic-embed-text
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:11434/api/tags"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 10s
 
   db:
     image: pgvector/pgvector:pg16
@@ -23,6 +31,12 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U causa -d causa"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 10s
 
   backend:
     build:
@@ -31,13 +45,24 @@ services:
     ports:
       - "8000:8000"
     depends_on:
-      - ollama
-      - db
+      ollama:
+        condition: service_healthy
+      db:
+        condition: service_healthy
     environment:
       - CAUSA_ENV=dev
       - DATABASE_URL=postgresql+psycopg2://causa:causa_dev@db:5432/causa
       - OLLAMA_BASE_URL=http://ollama:11434
+      - MODEL_SMALL=qwen2.5:3b
+      - MODEL_LARGE=qwen2.5:14b
+      - MODEL_EMBEDDING=nomic-embed-text
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
 
   ui:
     build:

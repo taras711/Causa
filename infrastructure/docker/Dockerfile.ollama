@@ -2,5 +2,11 @@
 FROM ollama/ollama:latest
 
 # Modely se stáhnou při prvotním spuštění přes entrypoint
-# viz scripts/run_dev.sh nebo docker-compose.yml volumes
+ENV OLLAMA_MODELS=qwen2.5:3b,qwen2.5:14b,nomic-embed-text
+
 EXPOSE 11434
+
+# Entrypoint spustí Ollama a stáhne konfigurované modely
+COPY scripts/pull_models.sh /usr/local/bin/pull_models.sh
+RUN chmod +x /usr/local/bin/pull_models.sh
+ENTRYPOINT ["/usr/local/bin/pull_models.sh"]

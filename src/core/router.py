@@ -36,3 +36,7 @@ class ModelRouter:
 
     def list_models(self) -> list[str]:
         return sorted(self._models.keys())
+
+    def list_by_role(self, role: str) -> list[ModelConfig]:
+        """Vrátí všechny modely dané role."""
+        return [m for m in self._models.values() if m.role == role]

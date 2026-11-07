@@ -13,7 +13,7 @@ from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional
 
 from src.core.ledger import Ledger
-from src.models.case import Case, CaseStatus, CaseStep
+from src.core.case import Case, CaseStatus, CaseStep
 
 
 class WorkflowEngine:
