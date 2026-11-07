@@ -35,6 +35,21 @@ class MonteCarlo:
         if seed is not None:
             random.seed(seed)
 
+        if iterations <= 0:
+            return {
+                "iterations": 0,
+                "positive_roi_probability": None,
+                "roi_min": None,
+                "roi_max": None,
+                "roi_median": None,
+                "roi_p10": None,
+                "roi_p90": None,
+                "npv_min": None,
+                "npv_max": None,
+                "results": [],
+                "status": "ok",
+            }
+
         investment_range = model.get("investment_range", [100000, 100000])
         annual_return_range = model.get("annual_return_range", [0, 0])
         years = int(model.get("years", 1))

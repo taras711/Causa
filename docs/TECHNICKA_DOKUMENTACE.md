@@ -231,6 +231,57 @@ Datové konektory a ERP, monitorovací případy a Firemní rentgen, multi-tenan
 - Riziková matice aktualizována.
 - Zpětná vazba z design partnera (pokud適用uje) zapracována.
 
+## 8. Quant Engine – kvantifikace (Měsíce 7–8)
+
+Quant Engine poskytuje deterministické výpočty pro hodnocení finanční návratnosti řešení. Klíčové principy:
+
+- **LLM nikdy nevyrábí čísla** – všechny výpočty jsou deterministické a plně auditovatelné.
+- **Vstupy pocházejí z dat klienta nebo explicitně označených předpokladů** (Assumption).
+- **Výsledky jsou sledovatelné** – každý výpočet obsahuje cash flow, NPV, payback období a citlivostní analýzu.
+
+### 8.1 Komponenty
+
+| Soubor | Třída | Popis |
+|--------|-------|-------|
+| `src/quant/engine.py` | `QuantEngine` | Hlavní vstup – compute_roi (ROI, NPV, payback, cash flow) a sensitivity (citlivostní analýza) |
+| `src/quant/monte_carlo.py` | `MonteCarlo` | Monte Carlo simulace nad Quant Enginem – distribuce ROI, pravděpodobnost kladného ROI, percentily |
+| `src/quant/sensitivity.py` | `SensitivityAnalyzer` | Citlivostní analýza – jak se změna vstupního předpokladu promítne do ROI |
+| `src/quant/assumption_graph.py` | `AssumptionGraph` | Graf předpokladů s přepočtem dotčených větví při změně hodnoty |
+
+### 8.2 compute_roi
+
+Vstupní klíče: `investment`, `annual_return`, `years`, `discount_rate`.
+
+Výstup obsahuje: `roi` (%), `npv`, `payback_years`, `total_return`, `cash_flow` (pole s ročním cash flow, kumulací a NPV příspěvkem), `status`.
+
+Chybové stavy: `investment <= 0` vrací `status: "error: investment must be > 0"`.
+
+### 8.3 Citlivostní analýza
+
+Vstup: `base_case` + seznam `variations` (každá s `name` a `changes`). Výstup obsahuje `base_roi`, `base_npv` a pro každou variaci `roi`, `npv`, `roi_delta`, `payback_years`.
+
+### 8.4 Monte Carlo simulace
+
+Vstup: `investment_range`, `annual_return_range`, `years`, `discount_rate_range`, `iterations`, volitelný `seed` pro determinismus.
+
+Výstup: `positive_roi_probability` (%), `roi_min/max/median/p10/p90`, `npv_min/max`, všechny simulované výsledky.
+
+### 8.5 Graf předpokladů
+
+Umožňuje registrovat předpoklady se závislostmi (`depends_on`). Při změně hodnoty předpokladu (`recompute`) se vrátí seznam všech ovlivněných předpokladů (rekurzivní průchod závislostmi). Ochrana proti cyklickým závislostem přes visited množinu.
+
+### 8.6 API endpointy
+
+| Endpoint | Metoda | Popis |
+|----------|--------|-------|
+| `/roi` | POST | Vypočítá deterministický ROI |
+| `/sensitivity` | POST | Citlivostní analýza pro změny předpokladů |
+| `/monte-carlo` | POST | Monte Carlo simulace distribuce výsledků |
+| `/assumptions` | POST | Registrace nového předpokladu do grafu |
+| `/assumptions/{assumption_id}/recompute` | POST | Změna hodnoty předpokladu a vrácení ovlivněných větví |
+
+---
+
 ### Stav testovacího harnessu (Měsíce 2–3 – walking skeleton)
 
 Implementováno v rámci walking skeletonu:
@@ -261,5 +312,15 @@ Nově přidáno v rámci FaceModel schématu, A3 ingestion pipeline, hybridního
 | `tests/unit/test_retrieval.py` | 9 | HybridRetriever (keyword, sémantika, hybrid, persistence, prázdné výsledky) |
 | `tests/unit/test_verification_layer.py` | 10 | VerificationLayer (assumption, work_model, client_data, face_model, edge cases) |
 
-**Celkem:** 86 testů (64 unit + 22 eval), všechny procházejí.
+### Stav testovacího harnessu (Měsíce 7–8 – kvantifikace a Red Team)
+
+Nově přidáno v rámci Quant Enginu (ROI, citlivost, Monte Carlo, graf předpokladů):
+
+| Soubor | Testy | Popis |
+|--------|-------|-------|
+| `tests/unit/test_quant_engine.py` | 13 | QuantEngine compute_roi (základní, chybové stavy, cash flow, payback), citlivostní analýza (variace, prázdné base_case, delta) |
+| `tests/unit/test_monte_carlo.py` | 12 | MonteCarlo simulate (distribuce, determinismus se seedem, rozsahy, pravděpodobnost kladného ROI, nulové iterace) |
+| `tests/unit/test_assumption_graph.py` | 9 | AssumptionGraph (přidání, závislosti, set, recompute, ovlivněné větve, cykly) |
+
+**Celkem:** 120 testů (98 unit + 22 eval), všechny procházejí.
 
