@@ -82,12 +82,21 @@ python -m pytest tests/ --cov=src --cov-report=html
 ```
 
 Testy jsou rozděleny do podsložek:
-- `tests/unit/` – unit testy (Case model, Ledger, WorkflowEngine, Settings, schémata agentů, mocknuté agenty)
+- `tests/unit/` – unit testy (Case model, Ledger, WorkflowEngine, Settings, schémata agentů, mocknuté agenty, FaceModel schémata, A3 ingestion, hybridní retrieval, verifikační vrstva)
 - `tests/eval/` – evaluační testy se zlatými A3 případy (conftest + test_golden_a3)
 - `tests/integration/` – připraveno pro integrační testy
 - `tests/security/` – připraveno pro bezpečnostní testy
 
 Markery pytest: `unit`, `integration`, `eval`, `security`.
+
+**Celkem:** 86 testů (64 unit + 22 eval), všechny procházejí.
+
+### Nové komponenty (Měsíce 4–6 – znalostní jádro)
+
+- **FaceModel schémata** (`src/models/face_model.py`) – ověřené vzory firemního rozhodování s create/update/response/list/filter modely
+- **A3 ingestion pipeline** (`src/knowledge/ingestion.py`) – import textu, markdownu a JSON dokumentů, chunking, tvorba FaceModel záznamů, indexování do retrievalu
+- **Hybridní retrieval** (`src/knowledge/retrieval.py`) – klíčová slova + sémantika přes Ollama embeddings (nomic-embed-text), trvalé SQLite uložiště
+- **Verifikační vrstva** (`src/knowledge/verification.py`) – ověření tvrzení proti WorkModelu, datům klienta, předpokladům a FaceModel vzorům
 
 ## Dokumentace
 

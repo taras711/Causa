@@ -231,7 +231,7 @@ Datové konektory a ERP, monitorovací případy a Firemní rentgen, multi-tenan
 - Riziková matice aktualizována.
 - Zpětná vazba z design partnera (pokud適用uje) zapracována.
 
-### Stav testovacího harnessu (Měsíce 2–3)
+### Stav testovacího harnessu (Měsíce 2–3 – walking skeleton)
 
 Implementováno v rámci walking skeletonu:
 
@@ -250,5 +250,16 @@ Implementováno v rámci walking skeletonu:
 | `tests/eval/test_golden_a3.py` | 6 | Zlaté A3 případy (Framer, Diagnostician, SolutionDesigner, Verifier, engine) |
 | `tests/eval/conftest.py` | – | Fixtures: 2 zlaté případy (golden-a3-001, golden-a3-002) |
 
-**Celkem:** 48 testů (36 unit + 12 eval), všechny procházejí.
+### Stav testovacího harnessu (Měsíce 4–6 – znalostní jádro)
+
+Nově přidáno v rámci FaceModel schématu, A3 ingestion pipeline, hybridního retrievalu a verifikační vrstvy:
+
+| Soubor | Testy | Popis |
+|--------|-------|-------|
+| `tests/unit/test_face_model.py` | 8 | FaceModelCreate/Update/Response/List/Filter, validační meze |
+| `tests/unit/test_ingestion.py` | 13 | A3Ingestor (text/markdown/JSON/soubor), chunking, FaceModel creation, chybové stavy |
+| `tests/unit/test_retrieval.py` | 9 | HybridRetriever (keyword, sémantika, hybrid, persistence, prázdné výsledky) |
+| `tests/unit/test_verification_layer.py` | 10 | VerificationLayer (assumption, work_model, client_data, face_model, edge cases) |
+
+**Celkem:** 86 testů (64 unit + 22 eval), všechny procházejí.
 
