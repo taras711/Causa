@@ -322,5 +322,20 @@ Nově přidáno v rámci Quant Enginu (ROI, citlivost, Monte Carlo, graf předpo
 | `tests/unit/test_monte_carlo.py` | 12 | MonteCarlo simulate (distribuce, determinismus se seedem, rozsahy, pravděpodobnost kladného ROI, nulové iterace) |
 | `tests/unit/test_assumption_graph.py` | 9 | AssumptionGraph (přidání, závislosti, set, recompute, ovlivněné větve, cykly) |
 
-**Celkem:** 120 testů (98 unit + 22 eval), všechny procházejí.
+**Celkem:** 193 testů (98 unit + 22 eval + 73 security), všechny procházejí.
+
+### Stav testovacího harnessu (Měsíce 7–8 – Red Team / bezpečnostní testy)
+
+Nově přidáno v rámci bezpečnostního testování:
+
+| Soubor | Testy | Popis |
+|--------|-------|-------|
+| `tests/security/test_quant_adversarial.py` | 32 | ROI, citlivost, Monte Carlo, AssumptionGraph vůči neplatným vstupům, NaN/Infinity, extrémním rozsahům, injekčním payloadům |
+| `tests/security/test_ingestion_security.py` | 10 | A3 ingestor – invalidní JSON, hluboké vnoření, chybějící soubory, binární data, REDOS, injection |
+| `tests/security/test_retrieval_security.py` | 12 | HybridRetriever – neplatné dotazy, injection ID, poškozená DB, prázdné výsledky |
+| `tests/security/test_verification_security.py` | 8 | VerificationLayer – neplatné claims, injection source/face_model_id, hromadné texty |
+| `tests/security/test_anonymization_security.py` | 9 | Anonymizer – redakce PII, ochrana před ReDoS, injection do řetězců |
+| `tests/security/test_models_security.py` | 6 | Pydantic FaceModel a Case modely – injection jako data, limity accuracy/limit/offset |
+
+**Celkem:** 73 testů (bezpečnostní / adversarial), všechny procházejí.
 

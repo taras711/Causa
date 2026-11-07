@@ -85,11 +85,11 @@ Testy jsou rozděleny do podsložek:
 - `tests/unit/` – unit testy (Case model, Ledger, WorkflowEngine, Settings, schémata agentů, mocknuté agenty, FaceModel schémata, A3 ingestion, hybridní retrieval, verifikační vrstva, Quant Engine: ROI, citlivost, Monte Carlo, graf předpokladů)
 - `tests/eval/` – evaluační testy se zlatými A3 případy (conftest + test_golden_a3)
 - `tests/integration/` – připraveno pro integrační testy
-- `tests/security/` – připraveno pro bezpečnostní testy
+- `tests/security/` – bezpečnostní / adversarial testy (prompt injection, neplatné vstupy, přetečení, extrémy, odolnost Quant Enginu, anonymizace, injekce ID)
 
 Markery pytest: `unit`, `integration`, `eval`, `security`.
 
-**Celkem:** 120 testů (98 unit + 22 eval), všechny procházejí.
+**Celkem:** 193 testů (98 unit + 22 eval + 73 security), všechny procházejí.
 
 ### Nové komponenty (Měsíce 4–6 – znalostní jádro)
 
