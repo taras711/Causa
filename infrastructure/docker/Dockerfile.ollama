@@ -1,8 +1,14 @@
 # Ollama s předem staženými modely
+# Hodnoty se předávají přes --build-arg; výchozí hodnoty odpovídají configs/models.yaml (jediný zdroj pravdy)
 FROM ollama/ollama:latest
 
+ARG MODEL_SMALL=qwen3.5:4b
+ARG MODEL_LARGE=qwen3:14b
+ARG MODEL_COMPLEX=hf.co/Qwen/Qwen3-14B-GGUF:Q5_K_M
+ARG MODEL_EMBEDDING=nomic-embed-text
+
 # Modely se stáhnou při prvotním spuštění přes entrypoint
-ENV OLLAMA_MODELS=qwen2.5:3b,qwen2.5:14b,nomic-embed-text
+ENV OLLAMA_MODELS=${MODEL_SMALL},${MODEL_LARGE},${MODEL_COMPLEX},${MODEL_EMBEDDING}
 
 EXPOSE 11434
 

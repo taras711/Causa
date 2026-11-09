@@ -1,22 +1,30 @@
-"""Monte Carlo simulace pro odhad nejlepšího/horšího scénáře."""
+﻿"""Monte Carlo simulace pro odhad nejlepšího/horšího scénáře."""
 from __future__ import annotations
 
+import math
 import random
 from typing import Any
 
-from src.quant.engine import QuantEngine
+from src.quant.engine import QuantEngine, _safe_float
 
 
 class MonteCarlo:
-    """Spouští Monte Carlo simulaci nad Quant Enginem.
+    """Spouští Monte Carlo simulaci nad Quant Enginem."""
 
-    Pro každou iteraci vybere náhodné hodnoty vstupních předpokladů
-    v uvedených rozmezích a vypočítá ROI. Výsledkem je distribuce možných
-    výsledků (best case, worst case, pravděpodobnost kladného ROI).
-    """
+    MAX_ITERATIONS = 100_000
 
     def __init__(self, engine: QuantEngine | None = None) -> None:
         self.engine = engine or QuantEngine()
+
+    def _safe_range(self, value: Any, default: tuple[float, float]) -> tuple[float, float]:
+        if not isinstance(value, (list, tuple)) or len(value) != 2:
+            return default
+        a = _safe_float(value[0])
+        b = _safe_float(value[1])
+        if a is None or b is None:
+            return default
+        lo, hi = (a, b) if a <= b else (b, a)
+        return lo, hi
 
     def simulate(
         self,
@@ -24,21 +32,68 @@ class MonteCarlo:
         iterations: int = 1000,
         seed: int | None = None,
     ) -> dict[str, Any]:
-        """Spustí simulaci.
+        """Spustí simulaci."""
+        if not isinstance(model, dict):
+            model = {}
 
-        Očekávané klíče ve modelu:
-          - investment_range: [min, max]
-          - annual_return_range: [min, max]
-          - years: int
-          - discount_rate_range: [min, max]
-        """
+        try:
+            iterations = int(iterations)
+        except (TypeError, ValueError):
+            iterations = 0
+
+        if iterations <= 0:
+            return {
+                "iterations": 0,
+                "positive_roi_probability": None,
+                "roi_min": None,
+                "roi_max": None,
+                "roi_median": None,
+                "roi_p10": None,
+                "roi_p90": None,
+                "npv_min": None,
+                "npv_max": None,
+                "results": [],
+                "status": "ok",
+            }
+
+        if iterations > self.MAX_ITERATIONS:
+            return {
+                "iterations": 0,
+                "positive_roi_probability": None,
+                "roi_min": None,
+                "roi_max": None,
+                "roi_median": None,
+                "roi_p10": None,
+                "roi_p90": None,
+                "npv_min": None,
+                "npv_max": None,
+                "results": [],
+                "status": "error: too many iterations",
+            }
+
         if seed is not None:
-            random.seed(seed)
+            try:
+                random.seed(int(seed))
+            except (TypeError, ValueError):
+                random.seed()
 
-        investment_range = model.get("investment_range", [100000, 100000])
-        annual_return_range = model.get("annual_return_range", [0, 0])
-        years = int(model.get("years", 1))
-        discount_rate_range = model.get("discount_rate_range", [0, 0])
+        investment_range = self._safe_range(
+            model.get("investment_range", [100000, 100000]), (100000.0, 100000.0)
+        )
+        annual_return_range = self._safe_range(
+            model.get("annual_return_range", [0, 0]), (0.0, 0.0)
+        )
+        discount_rate_range = self._safe_range(
+            model.get("discount_rate_range", [0, 0]), (0.0, 0.0)
+        )
+
+        raw_years = model.get("years", 1)
+        try:
+            years = int(raw_years)
+        except (TypeError, ValueError):
+            years = 1
+        if years < 0 or years > self.engine.MAX_YEARS:
+            years = 1
 
         results: list[dict[str, Any]] = []
         positive_roi_count = 0
@@ -86,22 +141,22 @@ class MonteCarlo:
             d = k - f
             return data[f] + d * (data[c] - data[f])
 
+        npvs = [r["npv"] for r in results if r["npv"] is not None]
+
+        positive_prob = None
+        if iterations > 0:
+            positive_prob = round((positive_roi_count / iterations) * 100, 2)
+
         return {
             "iterations": iterations,
-            "positive_roi_probability": round(
-                (positive_roi_count / iterations) * 100, 2
-            ),
+            "positive_roi_probability": positive_prob,
             "roi_min": round(min(rois), 2) if rois else None,
             "roi_max": round(max(rois), 2) if rois else None,
             "roi_median": round(percentile(rois, 50), 2) if rois else None,
             "roi_p10": round(percentile(rois, 10), 2) if rois else None,
             "roi_p90": round(percentile(rois, 90), 2) if rois else None,
-            "npv_min": round(min(r["npv"] for r in results if r["npv"] is not None), 2)
-            if any(r["npv"] is not None for r in results)
-            else None,
-            "npv_max": round(max(r["npv"] for r in results if r["npv"] is not None), 2)
-            if any(r["npv"] is not None for r in results)
-            else None,
+            "npv_min": round(min(npvs), 2) if npvs else None,
+            "npv_max": round(max(npvs), 2) if npvs else None,
             "results": results,
             "status": "ok",
         }

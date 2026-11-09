@@ -1,7 +1,6 @@
 #!/bin/bash
-# Spuštěí zálohování
-
+# Spuštění zálohování dat Causa (SQLite, ledger, vektory) dle nastavení v Settings/.env.
 set -euo pipefail
 
-echo "==> Spouštím zálohování"
-bash infrastructure/backups/backup_script.sh
+echo "==> Spouštím zálohování dat Causa"
+python -m src.core.backup

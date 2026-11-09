@@ -3,7 +3,7 @@
 
 set -euo pipefail
 
-MODELS="${OLLAMA_MODELS:-qwen2.5:3b,qwen2.5:14b,nomic-embed-text}"
+MODELS="${OLLAMA_MODELS:-$(python3 -c "import yaml; print(','.join(m['name'] for m in yaml.safe_load(open('configs/models.yaml'))['models'].values()))")}"
 
 echo "==> Spouštím Ollama server na pozadí..."
 ollama serve &

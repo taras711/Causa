@@ -1,10 +1,12 @@
 """Vstupní bod API – inicializace FastAPI aplikace a registrace rout."""
 from __future__ import annotations
 
+import uvicorn
 from fastapi import FastAPI
 
 from src.api.routes import agents, cases, knowledge, quant
 from src.api.middleware import setup_middleware
+from src.config.settings import Settings
 
 
 def create_app() -> FastAPI:
@@ -28,3 +30,13 @@ def create_app() -> FastAPI:
 
 
 app = create_app()
+settings = Settings()
+
+
+if __name__ == "__main__":
+    uvicorn.run(
+        "src.api.main:app",
+        host=settings.api_host,
+        port=settings.api_port,
+        reload=True,
+    )

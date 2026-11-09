@@ -23,6 +23,32 @@ class WorkflowEngine:
         self.db_path = Path(db_path)
         self.ledger = ledger
         self._steps: dict[str, Callable] = {}
+        self.db_path.parent.mkdir(parents=True, exist_ok=True)
+        self._init_db()
+
+    def _init_db(self) -> None:
+        """Vytvoří tabulku případů, pokud ještě neexistuje."""
+        import sqlite3
+
+        conn = sqlite3.connect(str(self.db_path))
+        try:
+            conn.execute(
+                """
+                CREATE TABLE IF NOT EXISTS cases (
+                    case_id TEXT PRIMARY KEY,
+                    status TEXT NOT NULL,
+                    plan TEXT NOT NULL DEFAULT '[]',
+                    completed_steps TEXT NOT NULL DEFAULT '[]',
+                    updated_at TEXT NOT NULL
+                )
+                """
+            )
+            conn.execute(
+                "CREATE INDEX IF NOT EXISTS idx_cases_status ON cases(status)"
+            )
+            conn.commit()
+        finally:
+            conn.close()
 
     def register_step(self, name: str, func: Callable) -> None:
         """Registruje krok workflow pod daným jménem."""

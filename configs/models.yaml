@@ -3,7 +3,7 @@
 
 models:
   small:
-    name: "qwen2.5:3b"
+    name: "qwen3.5:4b"
     role: "small"
     description: "Klasifikace, extrakce, jednoduché úkony"
     temperature: 0.1
@@ -11,9 +11,17 @@ models:
     context_window: 16384
 
   large:
-    name: "qwen2.5:14b"
+    name: "qwen3:14b"
     role: "large"
     description: "Uvažování, syntéza, složitější kroky"
+    temperature: 0.2
+    max_tokens: 4096
+    context_window: 32768
+
+  complex:
+    name: "hf.co/Qwen/Qwen3-14B-GGUF:Q5_K_M"
+    role: "complex"
+    description: "Náročné úvahy, hluboká analýza, komplexní rozhodnutí"
     temperature: 0.2
     max_tokens: 4096
     context_window: 32768

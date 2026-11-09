@@ -226,8 +226,116 @@ Datové konektory a ERP, monitorovací případy a Firemní rentgen, multi-tenan
 ## 7. Definice hotovo (DoD) pro každou fázi
 
 - Kód je naprogramován, pročten a kompiluje/ běží.
-- Unit testy a evaluační testy pro danou fázi passent v CI.
+- Unit testy a evaluační testy pro danou fázi passent v CI (pytest, tests/unit/, tests/eval/).
 - Dokumentace aktualizována (architektura, API, uživatelská příručka).
 - Riziková matice aktualizována.
 - Zpětná vazba z design partnera (pokud適用uje) zapracována.
+
+## 8. Quant Engine – kvantifikace (Měsíce 7–8)
+
+Quant Engine poskytuje deterministické výpočty pro hodnocení finanční návratnosti řešení. Klíčové principy:
+
+- **LLM nikdy nevyrábí čísla** – všechny výpočty jsou deterministické a plně auditovatelné.
+- **Vstupy pocházejí z dat klienta nebo explicitně označených předpokladů** (Assumption).
+- **Výsledky jsou sledovatelné** – každý výpočet obsahuje cash flow, NPV, payback období a citlivostní analýzu.
+
+### 8.1 Komponenty
+
+| Soubor | Třída | Popis |
+|--------|-------|-------|
+| `src/quant/engine.py` | `QuantEngine` | Hlavní vstup – compute_roi (ROI, NPV, payback, cash flow) a sensitivity (citlivostní analýza) |
+| `src/quant/monte_carlo.py` | `MonteCarlo` | Monte Carlo simulace nad Quant Enginem – distribuce ROI, pravděpodobnost kladného ROI, percentily |
+| `src/quant/sensitivity.py` | `SensitivityAnalyzer` | Citlivostní analýza – jak se změna vstupního předpokladu promítne do ROI |
+| `src/quant/assumption_graph.py` | `AssumptionGraph` | Graf předpokladů s přepočtem dotčených větví při změně hodnoty |
+
+### 8.2 compute_roi
+
+Vstupní klíče: `investment`, `annual_return`, `years`, `discount_rate`.
+
+Výstup obsahuje: `roi` (%), `npv`, `payback_years`, `total_return`, `cash_flow` (pole s ročním cash flow, kumulací a NPV příspěvkem), `status`.
+
+Chybové stavy: `investment <= 0` vrací `status: "error: investment must be > 0"`.
+
+### 8.3 Citlivostní analýza
+
+Vstup: `base_case` + seznam `variations` (každá s `name` a `changes`). Výstup obsahuje `base_roi`, `base_npv` a pro každou variaci `roi`, `npv`, `roi_delta`, `payback_years`.
+
+### 8.4 Monte Carlo simulace
+
+Vstup: `investment_range`, `annual_return_range`, `years`, `discount_rate_range`, `iterations`, volitelný `seed` pro determinismus.
+
+Výstup: `positive_roi_probability` (%), `roi_min/max/median/p10/p90`, `npv_min/max`, všechny simulované výsledky.
+
+### 8.5 Graf předpokladů
+
+Umožňuje registrovat předpoklady se závislostmi (`depends_on`). Při změně hodnoty předpokladu (`recompute`) se vrátí seznam všech ovlivněných předpokladů (rekurzivní průchod závislostmi). Ochrana proti cyklickým závislostem přes visited množinu.
+
+### 8.6 API endpointy
+
+| Endpoint | Metoda | Popis |
+|----------|--------|-------|
+| `/roi` | POST | Vypočítá deterministický ROI |
+| `/sensitivity` | POST | Citlivostní analýza pro změny předpokladů |
+| `/monte-carlo` | POST | Monte Carlo simulace distribuce výsledků |
+| `/assumptions` | POST | Registrace nového předpokladu do grafu |
+| `/assumptions/{assumption_id}/recompute` | POST | Změna hodnoty předpokladu a vrácení ovlivněných větví |
+
+---
+
+### Stav testovacího harnessu (Měsíce 2–3 – walking skeleton)
+
+Implementováno v rámci walking skeletonu:
+
+| Soubor | Testy | Popis |
+|--------|-------|-------|
+| `tests/unit/test_case.py` | 7 | Case model, CaseStatus, CaseStep, claims, recommendations |
+| `tests/unit/test_ledger.py` | 7 | Append-only ledger, tabulka, dotazování podle case_id |
+| `tests/unit/test_engine.py` | 6 | WorkflowEngine, checkpointy, obnova po selhání, ledgerové události |
+| `tests/unit/test_settings.py` | 3 | Načtení modelové konfigurace z configs/models.yaml |
+| `tests/unit/test_agent_schemas.py` | 8 | Pydantic schémata všech pěti agentů, validace rozsahů |
+| `tests/unit/test_framer_mocked.py` | 2 | FramerAgent s mocknutým Ollama |
+| `tests/unit/test_diagnostician_mocked.py` | 2 | DiagnosticianAgent s mocknutým Ollama |
+| `tests/unit/test_evidence_retriever.py` | 2 | EvidenceRetrieverAgent s/bez retrieveru |
+| `tests/unit/test_solution_designer_mocked.py` | 2 | SolutionDesignerAgent s mocknutým Ollama |
+| `tests/unit/test_verifier_mocked.py` | 2 | VerifierAgent s mocknutým Ollama |
+| `tests/eval/test_golden_a3.py` | 6 | Zlaté A3 případy (Framer, Diagnostician, SolutionDesigner, Verifier, engine) |
+| `tests/eval/conftest.py` | – | Fixtures: 2 zlaté případy (golden-a3-001, golden-a3-002) |
+
+### Stav testovacího harnessu (Měsíce 4–6 – znalostní jádro)
+
+Nově přidáno v rámci FaceModel schématu, A3 ingestion pipeline, hybridního retrievalu a verifikační vrstvy:
+
+| Soubor | Testy | Popis |
+|--------|-------|-------|
+| `tests/unit/test_face_model.py` | 8 | FaceModelCreate/Update/Response/List/Filter, validační meze |
+| `tests/unit/test_ingestion.py` | 13 | A3Ingestor (text/markdown/JSON/soubor), chunking, FaceModel creation, chybové stavy |
+| `tests/unit/test_retrieval.py` | 9 | HybridRetriever (keyword, sémantika, hybrid, persistence, prázdné výsledky) |
+| `tests/unit/test_verification_layer.py` | 10 | VerificationLayer (assumption, work_model, client_data, face_model, edge cases) |
+
+### Stav testovacího harnessu (Měsíce 7–8 – kvantifikace a Red Team)
+
+Nově přidáno v rámci Quant Enginu (ROI, citlivost, Monte Carlo, graf předpokladů):
+
+| Soubor | Testy | Popis |
+|--------|-------|-------|
+| `tests/unit/test_quant_engine.py` | 13 | QuantEngine compute_roi (základní, chybové stavy, cash flow, payback), citlivostní analýza (variace, prázdné base_case, delta) |
+| `tests/unit/test_monte_carlo.py` | 12 | MonteCarlo simulate (distribuce, determinismus se seedem, rozsahy, pravděpodobnost kladného ROI, nulové iterace) |
+| `tests/unit/test_assumption_graph.py` | 9 | AssumptionGraph (přidání, závislosti, set, recompute, ovlivněné větve, cykly) |
+
+**Celkem:** 193 testů (98 unit + 22 eval + 73 security), všechny procházejí.
+
+### Stav testovacího harnessu (Měsíce 7–8 – Red Team / bezpečnostní testy)
+
+Nově přidáno v rámci bezpečnostního testování:
+
+| Soubor | Testy | Popis |
+|--------|-------|-------|
+| `tests/security/test_quant_adversarial.py` | 32 | ROI, citlivost, Monte Carlo, AssumptionGraph vůči neplatným vstupům, NaN/Infinity, extrémním rozsahům, injekčním payloadům |
+| `tests/security/test_ingestion_security.py` | 10 | A3 ingestor – invalidní JSON, hluboké vnoření, chybějící soubory, binární data, REDOS, injection |
+| `tests/security/test_retrieval_security.py` | 12 | HybridRetriever – neplatné dotazy, injection ID, poškozená DB, prázdné výsledky |
+| `tests/security/test_verification_security.py` | 8 | VerificationLayer – neplatné claims, injection source/face_model_id, hromadné texty |
+| `tests/security/test_anonymization_security.py` | 9 | Anonymizer – redakce PII, ochrana před ReDoS, injection do řetězců |
+| `tests/security/test_models_security.py` | 6 | Pydantic FaceModel a Case modely – injection jako data, limity accuracy/limit/offset |
+
+**Celkem:** 73 testů (bezpečnostní / adversarial), všechny procházejí.
 

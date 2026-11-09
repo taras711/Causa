@@ -21,7 +21,7 @@ class FramerOutput(BaseModel):
 class FramerAgent(BaseAgent[FramerInput, FramerOutput]):
     """Definuje rozsah případu a navrhuje strukturu A3 analýzy.
 
-    Používá malý model (qwen2.5:3b) pro klasifikaci a extrakci.
+    Používá malý model (qwen3.5:4b) pro klasifikaci a extrakci.
     """
 
     def __init__(self, **kwargs) -> None:
@@ -30,7 +30,7 @@ class FramerAgent(BaseAgent[FramerInput, FramerOutput]):
             autonomy=AutonomyLevel.L1,
             input_schema=FramerInput,
             output_schema=FramerOutput,
-            model_name=kwargs.get("model_name", "qwen2.5:3b"),
+            model_role="small",
             ollama_base_url=kwargs.get(
                 "ollama_base_url", "http://localhost:11434"
             ),
