@@ -1,0 +1,452 @@
+﻿[
+  {
+    "id": "km-001",
+    "title": "5 Procku (5 Whys) - metoda hledani korenove priciny",
+    "content": "Metoda 5 Procku je jednoduchy nastroj pro hledani korenove priciny problému. Zadanim opakovane otazky 'Proc?' az pět krat se dostaneme od priznaku ke skutecne pricine. Vhodna pro operacni problemy, kvalitu vyroby a servisni incidenty.",
+    "source": "lean_handbook",
+    "category": "root_cause_analysis",
+    "tags": ["5 whys", "korenova pricina", "lean", "problem solving"],
+    "confidence": 0.95
+  },
+  {
+    "id": "km-002",
+    "title": "Rybí kosti (Ishikawa diagram) - kategorizace pricin",
+    "content": "Rybí kosti (Ishikawa, cause-and-effect diagram) slouzi ke strukturovanemu usporadani moznych pricin problému do kategorií: Lide, Metody, Stroje, Material, Prostredi, Mereni. Pomaha identifikovat oblasti kde hledat korenovou pricinu.",
+    "source": "quality_management",
+    "category": "root_cause_analysis",
+    "tags": ["ishikawa", "rybi kosti", "kategorie pricin", "kvalita"],
+    "confidence": 0.92
+  },
+  {
+    "id": "km-003",
+    "title": "A3 metoda - strukturovane ridici hlášení",
+    "content": "A3 je jednostronicove ridici hlášení na papíru formátu A3 pouzivane v Toyotě. Obsahuje: pozadi, soucasny stav, cil, analyza korenovych pricin, navrh reseni, plan, kontrola. Vhodne pro strategicka rozhodnuti a projektove rizeni.",
+    "source": "toyota_production_system",
+    "category": "a3_method",
+    "tags": ["a3", "lean", "strukturace", "reporting"],
+    "confidence": 0.90
+  },
+  {
+    "id": "km-004",
+    "title": "PDCA cyklus - Plan, Do, Check, Act",
+    "content": "PDCA (Plan-Do-Check-Act) je iterativni metoda pro neustale zlepsovani procesu. Plan = definice cile a planu, Do = realizace, Check = vyhodnoceni vysledku, Act = implementace zmeny nebo navrat k planu. Zaklad moderniho rizeni kvality.",
+    "source": "iso_9001",
+    "category": "improvement",
+    "tags": ["pdca", "kvalita", "neustale zlepsovani", "cycle"],
+    "confidence": 0.94
+  },
+  {
+    "id": "km-005",
+    "title": "ROI - vypocet navratnosti investice",
+    "content": "ROI (Return on Investment) = (cisty zisk z investice / naklady na investici) * 100. Míra toho, kolik zisku vratí investice v procentech. Vypocet bere v uvahu casovou hodnotu penez (diskontaci) pri dalším 분석u přes NPV.",
+    "source": "finance_handbook",
+    "category": "quantification",
+    "tags": ["roi", "navratnost", "investice", "finance"],
+    "confidence": 0.96
+  },
+  {
+    "id": "km-006",
+    "title": "NPV - czista Soucasna hodnota",
+    "content": "NPV (Net Present Value) je soucasna hodnota budoucich peněžních toků diskontovana na dnesni den. Pozitivni NPV znamená ze investice vytvari hodnotu nad pozadovanou miru vynosu. Vzorec: NPV = sum(CF_t / (1+r)^t) - investice.",
+    "source": "finance_handbook",
+    "category": "quantification",
+    "tags": ["npv", "diskontace", "cash flow", "finance"],
+    "confidence": 0.95
+  },
+  {
+    "id": "km-007",
+    "title": "Payback doba - doba vraceni investice",
+    "content": "Payback doba je čas nutny k tomu, aby kumulativni cash flow z investice dosahnul nuly (vratil pořizovací naklady). Kratsi payback oznacuje mene rizikovou investici. Nevypocita se casovou hodnotu penez.",
+    "source": "finance_handbook",
+    "category": "quantification",
+    "tags": ["payback", "doba vraceni", "cash flow", "investice"],
+    "confidence": 0.93
+  },
+  {
+    "id": "km-008",
+    "title": "Monte Carlo simulace - odhad nejlepsiho a nejhorsiho scenare",
+    "content": "Monte Carlo simulace generuje tisice moznych vysledku modelu nahodnym vyberem hodnot z definovanych rozmezi vstupnich parametru. Vysledkem je pravdepodobnostni distribuce (min, max, median, p10, p90) pro ROI nebo NPV.",
+    "source": "risk_analysis",
+    "category": "quantification",
+    "tags": ["monte carlo", "simulace", "risiko", "pravdepodobnost"],
+    "confidence": 0.91
+  },
+  {
+    "id": "km-009",
+    "title": "Citlivostni analyza - vliv zmeny predpokladu na vysledek",
+    "content": "Citlivostni analyza zkouma, jak se zmena jednoho predpokladu (napr. diskontni sazba, rocni vynos, investice) projevi do vysledneho ROI. Pomaha identifikovat nejkritickejsi predpoklady a rizikove body investice.",
+    "source": "risk_analysis",
+    "category": "quantification",
+    "tags": ["citlivost", "scenario", "predpoklad", "analyza"],
+    "confidence": 0.90
+  },
+  {
+    "id": "km-010",
+    "title": "WorkModel - firemni pracovni model",
+    "content": "WorkModel je dokumentace klíčových procesů firmy, rolí, odpovědností a pravidel fungování. Slouží jako zdroj pravdy pro verifikaci tvrzení v causovém modelu. Obsahuje procesy, klíčové metriky a décide pravomoci.",
+    "source": "internal",
+    "category": "framework",
+    "tags": ["workmodel", "procesy", "role", "zdroj pravdy"],
+    "confidence": 0.88
+  },
+  {
+    "id": "km-011",
+    "title": "FaceModel - vzor uspesneho reseni",
+    "content": "FaceModel je anonymizovaný vzor uspesne vyreseneho business cases z minulosti. Obsahuje problem, kontext, korenove priciný, navržené reseni, dosazene vysledky a poučení. Slouží jako inspirace pro soucasne pripady.",
+    "source": "curated",
+    "category": "face_model",
+    "tags": ["facemodel", "vzor", "best practice", "pripadova studie"],
+    "confidence": 0.85
+  },
+  {
+    "id": "km-012",
+    "title": "Root Cause Analysis - proces identifikace pricin",
+    "content": "Root Cause Analysis (RCA) je systematický proces identifikace skutecne pricine problému, nikoli jen priznaků. Krok: 1) definice problému, 2) sběr dat, 3) identifikace pricin, 4) urceni korenove priciny, 5) navrh nápravy, 6) implementace a kontrola.",
+    "source": "operations_manual",
+    "category": "root_cause_analysis",
+    "tags": ["rca", "korenova pricina", "proces", "náprava"],
+    "confidence": 0.93
+  },
+  {
+    "id": "km-013",
+    "title": "Pareto princip (80/20) -Focus na nejvetsi prispěvatele",
+    "content": "Pareto princip rika, že 80% dusledků plyne z 20% pricin. V business kontextu to znamena ze malá skupinka faktoru (produktu, zakazniku, chyb) prináší většinu výsledku. Pouziva se pro priorizaci úsilí.",
+    "source": "management_primer",
+    "category": "prioritization",
+    "tags": ["pareto", "80/20", "priorizace", "focus"],
+    "confidence": 0.89
+  },
+  {
+    "id": "km-014",
+    "title": "Kanban - vizualizace toku prace",
+    "content": "Kanban je metoda vizualizace toku prace na desce se sloupci (napr. To Do, Doing, Done). Omezuje práci rozpracovanou (WIP limit) a odhaluje bottlenecky v procese. Pouzívá se v IT, vyrobe i servisu.",
+    "source": "lean_handbook",
+    "category": "process",
+    "tags": ["kanban", "flow", "wip", "vizualizace"],
+    "confidence": 0.91
+  },
+  {
+    "id": "km-015",
+    "title": "5S - usporadani pracovniho mista",
+    "content": "5S (Seiri, Seiton, Seiso, Seiketsu, Shitsuke) je japonská metoda usporadani pracovního prostredi: třídit, usporadat, cistit, standardizovat, udržovat. Cílem je efektivnejsi a bezpecnejsi pracovni prostredi.",
+    "source": "lean_handbook",
+    "category": "process",
+    "tags": ["5s", "usporadani", "pracovni misto", "lean"],
+    "confidence": 0.90
+  },
+  {
+    "id": "km-016",
+    "title": "Kaizen - neustale zlepsovani",
+    "content": "Kaizen je filozofie neustaleho zlepsovani vsech procesu a aktivit ve firme. Zapojuje vsechny zamestnance od vrcholového vedení po delnicku. Malé inkrementalni zmeny vedou k velkým výsledkum v casu.",
+    "source": "lean_handbook",
+    "category": "improvement",
+    "tags": ["kaizen", "zlepsovani", "zamestnanci", "filozofie"],
+    "confidence": 0.92
+  },
+  {
+    "id": "km-017",
+    "title": "Hoshin Kanri - strategicke management rizeni",
+    "content": "Hoshin Kanri je metoda strategického řízení, která propojuje vizi firmy s dennimi aktivitami. Pomáha přeložit strategické cile do konkrétních projektů a ukazatelů (KPI) na všech úrovních organizace.",
+    "source": "strategy_guide",
+    "category": "strategy",
+    "tags": ["hoshin kanri", "strategie", "kpi", "cile"],
+    "confidence": 0.87
+  },
+  {
+    "id": "km-018",
+    "title": "OKR - Objectives and Key Results",
+    "content": "OKR (Objectives and Key Results) je rámec pro nastavování a sledování cílů. Objective = kvalitativní cíl, Key Results = měřitelné výsledky. Používá Googlem a dalšími technologickými firmami pro zarovnání týmu.",
+    "source": "management_primer",
+    "category": "strategy",
+    "tags": ["okr", "cile", "key results", "mereni"],
+    "confidence": 0.90
+  },
+  {
+    "id": "km-019",
+    "title": "KPI - klíčové ukazatele výkonu",
+    "content": "KPI (Key Performance Indicator) je měřitelná hodnota ukazující, jak úspěšně organizace plní své klíčové obchodní cíle. Dobré KPI jsou SMART (konkretní, měřitelné, dosažitelné, relevantní, časově ohraničené).",
+    "source": "management_primer",
+    "category": "metrics",
+    "tags": ["kpi", "ukazatele", "vykon", "smart"],
+    "confidence": 0.94
+  },
+  {
+    "id": "km-020",
+    "title": "Balanced Scorecard - vyvážený systém ukazatelů",
+    "content": "Balanced Scorecard je manažerský nástroj pro měření výkonu z čtyř pohledů: finanční, zákaznický, interní procesy, učení a růst. Zabraňuje přehledujení na finanční ukazatele na úkor ostatních rozměrů.",
+    "source": "strategy_guide",
+    "category": "metrics",
+    "tags": ["balanced scorecard", "vykon", "ctiri pohledy", "management"],
+    "confidence": 0.88
+  },
+  {
+    "id": "km-021",
+    "title": "TOC - Teorie omezení",
+    "content": "Teorie omezení (Theory of Constraints, TOC) od Eliyahua Goldratta rika, že každý systém má alespoň jedno omezení (bottleneck), které limituje jeho výkonnost. Zaměření úsilí na odstranění tohoto omezení přináší největší zlepšení.",
+    "source": "operations_manual",
+    "category": "process",
+    "tags": ["toc", "bottleneck", "omezení", "vykonnost"],
+    "confidence": 0.89
+  },
+  {
+    "id": "km-022",
+    "title": "Six Sigma - snižování variability procesu",
+    "content": "Six Sigma je metoda pro snižování variability a vad v procesech. Cílem je dosáhnout 3,4 vad na milion příležitostí. Používá DMAIC cyklus: Define, Measure, Analyze, Improve, Control.",
+    "source": "quality_management",
+    "category": "quality",
+    "tags": ["six sigma", "dmaic", "vad", "variabilita"],
+    "confidence": 0.91
+  },
+  {
+    "id": "km-023",
+    "title": "Poka-Yoke - ochrana proti chybě",
+    "content": "Poka-Yoke (chyba-predcházení) je mechanismus nebo procedura která zabraňuje chybě nebo ji okamžitě odhalí. Příklady: lijící verband, který nelze zapojit špatně, softwarová validace vstupu, fyzické vodící lišty.",
+    "source": "lean_handbook",
+    "category": "quality",
+    "tags": ["poka-yoke", "chyba", "prevence", "bezpecnost"],
+    "confidence": 0.89
+  },
+  {
+    "id": "km-024",
+    "title": "Jidoka - automatizace s lidským dotykem",
+    "content": "Jidoka je princip autonomizace (automatizace s lidským dohledem), kdy stroj nebo proces zastaví automaticky při detekci abnormality. Lidský operátor pak vyřeší problém a proces pokračuje. Zabraňuje šíření vad.",
+    "source": "toyota_production_system",
+    "category": "process",
+    "tags": ["jidoka", "autonomizace", "zastaveni", "vad"],
+    "confidence": 0.87
+  },
+  {
+    "id": "km-025",
+    "title": "Just-in-Time - výroba přesně včas",
+    "content": "Just-in-Time (JIT) je princip výroby a dodávání materiálu přesně v okamžiku, kdy je potřeba. Snižuje zásoby a plýtvání, ale vyžaduje spolehlivé dodavatele a přesnou koordinaci.",
+    "source": "toyota_production_system",
+    "category": "process",
+    "tags": ["jit", "zasoby", "plýtvání", "dodavatel"],
+    "confidence": 0.90
+  },
+  {
+    "id": "km-026",
+    "title": "Muda - sedm druhů plýtvání",
+    "content": "Muda je japonský termín pro plýtvání. V lean identifikujeme sedm druhů: nadprodukce, čekání, přeprava,過měrné zpracování, zásoby, pohyb, vadé produkty. Plus osmý: nevyužitý potenciál zaměstnanců.",
+    "source": "lean_handbook",
+    "category": "waste",
+    "tags": ["muda", "plýtvání", "sedm druhů", "lean"],
+    "confidence": 0.93
+  },
+  {
+    "id": "km-027",
+    "title": "Mura - nerovnomernost v procesech",
+    "content": "Mura je nerovnomernost nebo nesouvislost v pracovním toku. Způsobuje kolísání zatížení, fronty a neefektivitu. Odstraňování Mury vede k plynulejšímu toku a lepší prediktovatelnosti.",
+    "source": "lean_handbook",
+    "category": "waste",
+    "tags": ["mura", "nerovnomernost", "tok", "efektivita"],
+    "confidence": 0.86
+  },
+  {
+    "id": "km-028",
+    "title": "Muri - přetížení systému",
+    "content": "Muri je přetížení (přílišná zátěž) lidí, strojů nebo procesů. Vede k chybám, vyčerpání a selháním. Odstraňování Muri znamená nastavení realistických kapacit a WIP limitů.",
+    "source": "lean_handbook",
+    "category": "waste",
+    "tags": ["muri", "pretizeni", "kapacita", "wip"],
+    "confidence": 0.87
+  },
+  {
+    "id": "km-029",
+    "title": "Gemba chození - pozorování na pracovišti",
+    "content": "Gemba chození je praxe, kdy manažeři chodí přímo na místo, kde se práce odehrává (Gemba = skutočné místo), aby viděli procesy vlastníma očima, mluvili s lidmi a odhalili problémy, které z kanceláře nejsou vidět.",
+    "source": "lean_handbook",
+    "category": "management",
+    "tags": ["gemba", "pozorovani", "pracoviste", "manažer"],
+    "confidence": 0.88
+  },
+  {
+    "id": "km-030",
+    "title": "Hoshin X-matrix - propojeni strategie s provedením",
+    "content": "Hoshin X-matrix je vizualní nástroj propojující dlouhodobé cile (vlevo), ročné cile (vrchu), ukazatele (vpravo) a odpovědné osoby (dolu). Pomáha udržet soulad mezi strategií a denní operativou.",
+    "source": "strategy_guide",
+    "category": "strategy",
+    "tags": ["x-matrix", "hoshin", "strategie", "provedení"],
+    "confidence": 0.85
+  },
+  {
+    "id": "km-031",
+    "title": "RACI matice - role a odpovědnosti",
+    "content": "RACI matice definuje pro každou aktivitu nebo rozhodnutí: Responsible (kdo provede), Accountable (kdo odpovídá), Consulted (kdo se konzultuje), Informed (kdo se informuje). Jasně rozlišuje odpovědnosti v týmu.",
+    "source": "management_primer",
+    "category": "roles",
+    "tags": ["raci", "odpovednosti", "role", "rozhodnuti"],
+    "confidence": 0.92
+  },
+  {
+    "id": "km-032",
+    "title": "Stakeholder analyza - identifikace vlivných osob",
+    "content": "Stakeholder analyza identifikuje osoby a skupiny ovlivňované projektem nebo mmajici vliv na jeho výsledek. Klasifikuje je podle zájmu a vlivu a určuje strategii komunikace pro každou skupinu.",
+    "source": "project_management",
+    "category": "stakeholders",
+    "tags": ["stakeholder", "vliv", "komunikace", "analyza"],
+    "confidence": 0.89
+  },
+  {
+    "id": "km-033",
+    "title": "SWOT analyza - silné a slabé stránky",
+    "content": "SWOT analyza (Strengths, Weaknesses, Opportunities, Threats) vyhodnocuje vnitřní silné a slabé stránky organizace a vnější příležitosti a hrozby. Základ pro strategické rozhodnutí a plánování.",
+    "source": "strategy_guide",
+    "category": "strategy",
+    "tags": ["swot", "analyza", "strategie", "příležitosti"],
+    "confidence": 0.90
+  },
+  {
+    "id": "km-034",
+    "title": "PESTEL analyza - makroprostředí",
+    "content": "PESTEL analyza zkoumá vnější makroprostředí: Politické, Ekonomické, Sociální, Technologické, Environmentální a Právní faktory. Pomáha identifikovat makro trendy ovlivňující business.",
+    "source": "strategy_guide",
+    "category": "strategy",
+    "tags": ["pestel", "makroprostredi", "trendy", "analyza"],
+    "confidence": 0.87
+  },
+  {
+    "id": "km-035",
+    "title": "Porterova analýza pěti sil",
+    "content": "Porterova analýza pěti sil vyhodnocuje atraktivitu odvětví: hrozba nových vstupujících, vyjednávací síla dodavatelů, vyjednávací síla odběratelů, hrozba substitutů, soupeření mezi stávajícími hráči.",
+    "source": "strategy_guide",
+    "category": "strategy",
+    "tags": ["porter", "pet sil", "odvetvi", "konkurence"],
+    "confidence": 0.89
+  },
+  {
+    "id": "km-036",
+    "title": "BCG matice - portfolio produktů",
+    "content": "BCG matice klasifikuje produkty nebo divize podle růstu trhu a relativního podílu na trhu: hvězdy (vysoký růst, vysoký podíl), peněžní krávy (nízký růst, vysoký podíl), otazníky (vysoký růst, nízký podíl), psi (nízký růst, nízký podíl).",
+    "source": "strategy_guide",
+    "category": "strategy",
+    "tags": ["bcg", "portfolio", "produkty", "podil na trhu"],
+    "confidence": 0.86
+  },
+  {
+    "id": "km-037",
+    "title": "Ansoffova matice - strategie růstu",
+    "content": "Ansoffova matice nabízí čtyři strategie růstu: penetrace trhu (existující produkty, existující trh), rozvoj trhu (existující produkty, nový trh), rozvoj produktu (nové produkty, existující trh), diverzifikace (nové produkty, nový trh).",
+    "source": "strategy_guide",
+    "category": "strategy",
+    "tags": ["ansoff", "rust", "strategie", "produkt"],
+    "confidence": 0.85
+  },
+  {
+    "id": "km-038",
+    "title": "Value Stream Maping - mapování toku hodnoty",
+    "content": "VSM (Value Stream Mapping) je vizualizace celého toku od surového materiálu k zákazníkovi. Odděluje činnosti vytvářející hodnotu od nehodnotících (plýtvání) a slouží jako základ pro zlepšení celého řetězce.",
+    "source": "lean_handbook",
+    "category": "process",
+    "tags": ["vsm", "mapovani", "hodnota", "retezec"],
+    "confidence": 0.90
+  },
+  {
+    "id": "km-039",
+    "title": "Takt time - rytmus výroby",
+    "content": "Takt time je maximální čas, který má proces na výrobu jedné jednotky, aby splnil poptávku zákazníka. Takt = dostupný čas výroby / poptávka zákazníka. Základ pro vybalancováníリンie.",
+    "source": "lean_handbook",
+    "category": "process",
+    "tags": ["takt time", "rytmus", "výroba", "linka"],
+    "confidence": 0.88
+  },
+  {
+    "id": "km-040",
+    "title": "OEE - celková efektivita zařízení",
+    "content": "OEE (Overall Equipment Effectiveness) měří efektivitu výrobního zařízení jako součin tří faktorů: dostupnost, výkon a kvalita. Světový standard je 85%+. OEE odhaluje skryté ztráty ve výrobě.",
+    "source": "quality_management",
+    "category": "metrics",
+    "tags": ["oee", "zarizeni", "efektivita", "vyroba"],
+    "confidence": 0.91
+  },
+  {
+    "id": "km-041",
+    "title": "SMED - rychlá výměna nástroje",
+    "content": "SMED (Single-Minute Exchange of Die) je metoda zkracování času výměny nástroje nebo nastavení stroje na jednotky minut. Rozděluje činnosti na vnitřní (stroj zastaven) a vnější (stroj běží), které se provádějí připraveně.",
+    "source": "lean_handbook",
+    "category": "process",
+    "tags": ["smed", "vymena nastroje", "nastaveni", "cas"],
+    "confidence": 0.87
+  },
+  {
+    "id": "km-042",
+    "title": "Heijunka - vyrovnání výroby",
+    "content": "Heijunka je vyrovnání výrobního programu podle typu a objemu v čase. Místo dávkové výroby se produkce vyrovná, což snižuje kolísání, zásoby a zlepšuje reakční dobu na zákazníka.",
+    "source": "toyota_production_system",
+    "category": "process",
+    "tags": ["heijunka", "vyrovani", "vyrovnani", "vyroba"],
+    "confidence": 0.85
+  },
+  {
+    "id": "km-043",
+    "title": "5 Procku pro business rozhodnuti",
+    "content": "Použití metody 5 Procku i na strategická business rozhodnutí, nejen na operativní problémy. Například: 'Proč klesají prodeje?' -> 'Proč zákazníci odcházejí?' -> 'Proč je konkurence lepší?' atd. Odhaluje hluboké příčiny.",
+    "source": "curated",
+    "category": "root_cause_analysis",
+    "tags": ["5 whys", "byznys", "rozhodnuti", "strategie"],
+    "confidence": 0.86
+  },
+  {
+    "id": "km-044",
+    "title": "Business Model Canvas - model podnikání",
+    "content": "Business Model Canvas je jednostránkový rámec popisující devět stavebních bloků podnikání: zákaznické segmenty, hodnotová nabídka, kanály, vztahy, tok příjmů, klíčové zdroje, aktivity, partnery, nákladová struktura.",
+    "source": "strategy_guide",
+    "category": "framework",
+    "tags": ["bmc", "business model", "podnikani", "canvas"],
+    "confidence": 0.91
+  },
+  {
+    "id": "km-045",
+    "title": "Lean Canvas - pro startupy",
+    "content": "Lean Canvas je varianta Business Model Canvas optimalizovaná pro startupy. Nahrazuje některé bloky: problém, řešení, klíčové metriky, nefair výhoda. Zaměřuje se na rychlou validaci hypotéz.",
+    "source": "strategy_guide",
+    "category": "framework",
+    "tags": ["lean canvas", "startup", "validace", "hypotézy"],
+    "confidence": 0.88
+  },
+  {
+    "id": "km-046",
+    "title": "Jobs-to-be-Done - úloha pro zákazníka",
+    "content": "JTBD teoría říká, že zákazníci si 'najímají' produkty nebo služby, aby vykonali konkrétní úlohu (job). Zaměření na úlohu místo na produkt pomáhá lépe porozumět zákaznickým potřebám a vytvářet lepší řešení.",
+    "source": "product_management",
+    "category": "customer",
+    "tags": ["jtbd", "zakazník", "úloha", "produkt"],
+    "confidence": 0.87
+  },
+  {
+    "id": "km-047",
+    "title": "Customer Journey Map - cesta zákazníka",
+    "content": "Customer Journey Map vizualizuje všechny body kontaktu zákazníka s firmou od prvního povědomí po nákup a pósalež servis. Odhaluje bolestivá místa a příležitosti ke zlepšení zákaznické zkušenosti.",
+    "source": "product_management",
+    "category": "customer",
+    "tags": ["cj", "zákazník", "cesta", "zkušenost"],
+    "confidence": 0.89
+  },
+  {
+    "id": "km-048",
+    "title": "Net Promoter Score (NPS) - loajalita zákazníků",
+    "content": "NPS měří loajalitu zákazníků jednou otázkou: 'Jak pravděpodobné je, že byste nás doporučili příteli?' Skóre -100 až +100. Rozděluje zákazníky na propagátory, pasívní a kritiky.",
+    "source": "customer_success",
+    "category": "metrics",
+    "tags": ["nps", "loajalita", "zakazník", "doporučení"],
+    "confidence": 0.93
+  },
+  {
+    "id": "km-049",
+    "title": "Customer Lifetime Value (CLV) - celoživotní hodnota",
+    "content": "CLV odhaduje celkový zisk, který firma získá od jednoho zákazníka po dobu celého vztahu. Pomáhá určit, kolik je vhodné investovat do akvizice a retence zákazníků.",
+    "source": "finance_handbook",
+    "category": "metrics",
+    "tags": ["clv", "hodnota zakaznika", "zisk", "finance"],
+    "confidence": 0.90
+  },
+  {
+    "id": "km-050",
+    "title": "Churn rate - míra odchodu zákazníků",
+    "content": "Churn rate je procento zákazníků, kteří ukončili používání produktu nebo služby v daném období. Vysoký churn signalizuje problémy s produktem, cenou nebo zákaznickou podporou. Klíčový ukazatel pro SaaS a subscription byznys.",
+    "source": "customer_success",
+    "category": "metrics",
+    "tags": ["churn", "odchod", "retence", "saas"],
+    "confidence": 0.92
+  }
+]

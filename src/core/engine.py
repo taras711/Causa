@@ -72,6 +72,7 @@ class WorkflowEngine:
                     step.status = "failed"
                     step.error = str(exc)
                     step.completed_at = datetime.now(timezone.utc)
+                    case.status = CaseStatus.FAILED
                     self._persist_case(conn, case)
                     self.ledger.append(
                         event="step_failed",

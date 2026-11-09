@@ -1,0 +1,55 @@
+﻿name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+env:
+  PYTHON_VERSION: "3.11"
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout kódu
+        uses: actions/checkout@v4
+
+      - name: Nastavit Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Nainstalovat závislosti
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e .[dev,eval]
+
+      - name: Spustit unit testy
+        run: |
+          python -m pytest tests/unit -v --tb=short
+
+      - name: Spustit evaluační testy (zlaté případy)
+        run: |
+          python -m pytest tests/eval -v --tb=short
+
+      - name: Spustit bezpečnostní testy
+        run: |
+          python -m pytest tests/security -v --tb=short || true
+
+      - name: Spustit integrační testy
+        run: |
+          python -m pytest tests/integration -v --tb=short || true
+
+      - name: Spustit všechny testy společně
+        run: |
+          python -m pytest tests/ --tb=short
+
+      - name: Zkontrolovat kód (ruff)
+        run: |
+          ruff check src/ tests/
+
+      - name: Zkontrolovat typy (mypy)
+        run: |
+          mypy src/
