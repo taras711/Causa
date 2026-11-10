@@ -215,14 +215,14 @@ class HybridRetriever:
             # DatabĂˇzovĂˇ chyba by nemÄ›la blokovat bÄ›h v pamÄ›ti
             pass
 
-    def search(self, query: str, top_k: int = 5) -> list[dict[str, Any]]:
+    async def search(self, query: str, top_k: int = 5) -> list[dict[str, Any]]:
         """VyhledĂˇ dokumenty kombinacĂ­ klĂ­ÄŤovĂ˝ch slov a sĂ©mantickĂ©ho skĂłre.
 
         VĂˇha: 40 % klĂ­ÄŤovĂˇ slova, 60 % sĂ©mantickĂˇ podobnost.
         """
         return self.hybrid_search(query, top_k=top_k)
 
-    def hybrid_search(
+    async def hybrid_search(
         self,
         query: str,
         top_k: int = 5,
@@ -258,7 +258,7 @@ class HybridRetriever:
         scored.sort(key=lambda x: x[0], reverse=True)
         return [doc for _score, doc in scored[:top_k]]
 
-    def keyword_search(self, query: str, top_k: int = 5) -> list[dict[str, Any]]:
+    async def keyword_search(self, query: str, top_k: int = 5) -> list[dict[str, Any]]:
         """Pouze keyword-based vyhledĂˇvĂˇnĂ­ (zpÄ›tnĂˇ kompatibilita)."""
 
         query_words = set(query.lower().split())
@@ -274,7 +274,7 @@ class HybridRetriever:
         scored.sort(key=lambda x: x[0], reverse=True)
         return [doc for _score, doc in scored[:top_k]]
 
-    def semantic_search(self, query: str, top_k: int = 5) -> list[dict[str, Any]]:
+    async def semantic_search(self, query: str, top_k: int = 5) -> list[dict[str, Any]]:
         """Pouze sĂ©mantickĂ© vyhledĂˇvĂˇnĂ­ pĹ™es Ollama embeddings."""
 
         query_embedding = self._embed_text(query)

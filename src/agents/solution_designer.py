@@ -9,6 +9,7 @@ from src.agents.base import AutonomyLevel, BaseAgent
 class SolutionDesignerInput(BaseModel):
     root_causes: list[str]
     evidence: list[str] = Field(default_factory=list)
+    context: dict = Field(default_factory=dict)
 
 
 class SolutionDesignerOutput(BaseModel):
@@ -45,8 +46,13 @@ class SolutionDesignerAgent(BaseAgent[SolutionDesignerInput, SolutionDesignerOut
         )
         causes_text = "\n".join(f"- {c}" for c in input_data.root_causes)
         evidence_text = "\n".join(f"- {e}" for e in input_data.evidence) or "(žádné)"
+        context_text = "\n".join(
+            f"- {key}: {value}" for key, value in input_data.context.items()
+            if key not in {"framing", "evidence", "diagnosis", "solution"} and value
+        ) or "(další kontext neuveden)"
         user_prompt = (
             f"Kořenové příčiny:\n{causes_text}\n\n"
+            f"Kontext případu:\n{context_text}\n\n"
             f"Důkazy:\n{evidence_text}\n\n"
             "Vrať JSON s klíči: solutions (seznam řešení s popisy a kroky), "
             "estimated_roi (orientační číslo 0–100), confidence (0.0–1.0)."

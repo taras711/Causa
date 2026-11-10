@@ -1,14 +1,15 @@
-# Webové UI (Node.js + Vite build) – placeholder pro pozdější implementaci
+# Webové UI (React + TypeScript + Vite build) – napojeno na FastAPI backend
 FROM node:20-alpine AS builder
 
 WORKDIR /app
-COPY ui/package*.json ./
+COPY src/ui/web/package*.json ./
 RUN npm ci
 
-COPY ui/ ./
+COPY src/ui/web/ ./
 RUN npm run build
 
 FROM nginx:alpine
 COPY --from=builder /app/dist /usr/share/nginx/html
+COPY infrastructure/docker/nginx/ui.conf /etc/nginx/conf.d/default.conf
 EXPOSE 3000
 CMD ["nginx", "-g", "daemon off;"]

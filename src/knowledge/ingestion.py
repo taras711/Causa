@@ -14,6 +14,7 @@ from typing import Any
 from src.config.settings import Settings
 from src.models.face_model import FaceModelCreate, FaceModelResponse
 from src.knowledge.retrieval import HybridRetriever
+from src.knowledge.anonymization import Anonymizer
 
 
 @dataclass
@@ -56,6 +57,7 @@ class A3Ingestor:
     ) -> None:
         self.settings = settings or Settings()
         self.retriever = retriever or HybridRetriever()
+        self.anonymizer = Anonymizer()
 
     # ------------------------------------------------------------------ #
     # Veřejné rozhraní
@@ -303,3 +305,70 @@ class A3Ingestor:
         if len(first_sentence) > 120:
             first_sentence = first_sentence[:120].rstrip() + "..."
         return first_sentence or "Mechanismus není z obsahu explicitně odvozen."
+
+    # ------------------------------------------------------------------ #
+    # Rozhraní očekávané testy (IngestionPipeline alias)
+    # ------------------------------------------------------------------ #
+
+    async def ingest(self, document: dict[str, Any]) -> dict[str, Any]:
+        """Jeden dokument: anonymizuje, ingestuje a indexuje."""
+        anonymized = self.anonymizer.anonymize(document)
+        batch = await self.ingest_batch([anonymized])
+        return {
+            "status": "ingested",
+            "anonymized": True,
+            "doc": batch["results"][0]["doc"],
+        }
+
+    async def ingest_batch(
+        self, documents: list[dict[str, Any]]
+    ) -> dict[str, Any]:
+        """Dávkový ingest: anonymizuje všechny dokumenty a indexuje je."""
+        results: list[dict[str, Any]] = []
+        for doc in documents:
+            anonymized = self.anonymizer.anonymize(doc)
+            content = anonymized.get("content", "") or anonymized.get("text", "")
+            title = anonymized.get("title", anonymized.get("source", "noname"))
+            source = anonymized.get("source", "unknown")
+            chunks = self._chunk_text(content, source=source, title=title)
+            self._index_chunks(chunks, IngestionResult(chunks=chunks))
+            results.append({"doc": anonymized})
+        return {
+            "status": "batch_ingested",
+            "count": len(results),
+            "results": results,
+        }
+
+    def ingest_file(
+        self, path: str | Path, create_face_models: bool = True
+    ) -> IngestionResult:
+        """Ingestuje soubor podle přípony (.txt, .md, .json)."""
+        file_path = Path(path)
+        if not file_path.exists():
+            return IngestionResult(errors=[f"Soubor neexistuje: {path}"])
+        try:
+            content = file_path.read_text(encoding="utf-8")
+        except Exception as exc:  # noqa: BLE001
+            return IngestionResult(errors=[f"Nelze načíst soubor: {exc}"])
+        suffix = file_path.suffix.lower()
+        title = file_path.stem
+        source = str(file_path)
+        if suffix == ".md":
+            return self.ingest_markdown(
+                content, source=source, title=title,
+                create_face_models=create_face_models,
+            )
+        if suffix == ".json":
+            return self.ingest_json(
+                content, source=source, title=title,
+                create_face_models=create_face_models,
+            )
+        return self.ingest_text(
+            content, source=source, title=title,
+            create_face_models=create_face_models,
+        )
+
+
+# Zpětně kompatibilní alias pro testy a existující volající, kteří očekávají
+# název IngestionPipeline (původní název třídy před přejmenováním na A3Ingestor).
+IngestionPipeline = A3Ingestor

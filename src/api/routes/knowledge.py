@@ -3,7 +3,6 @@ from __future__ import annotations
 
 from fastapi import APIRouter
 
-from src.knowledge.anonymization import Anonymizer
 from src.knowledge.ingestion import IngestionPipeline
 from src.knowledge.retrieval import HybridRetriever
 from src.knowledge.verification import VerificationLayer
@@ -11,8 +10,7 @@ from src.knowledge.verification import VerificationLayer
 router = APIRouter()
 
 _retriever = HybridRetriever()
-_anonymizer = Anonymizer()
-_ingestion = IngestionPipeline(anonymizer=_anonymizer, retriever=_retriever)
+_ingestion = IngestionPipeline(retriever=_retriever)
 _verifier = VerificationLayer()
 
 

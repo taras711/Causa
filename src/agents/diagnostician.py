@@ -9,6 +9,7 @@ from src.agents.base import AutonomyLevel, BaseAgent
 class DiagnosticianInput(BaseModel):
     scope: str
     evidence: list[str] = Field(default_factory=list)
+    context: dict = Field(default_factory=dict)
 
 
 class DiagnosticianOutput(BaseModel):
@@ -42,8 +43,13 @@ class DiagnosticianAgent(BaseAgent[DiagnosticianInput, DiagnosticianOutput]):
             "Odpovídej vždy v češtině a ve formátu JSON. Nevytvářej číselné odhady."
         )
         evidence_text = "\n".join(f"- {e}" for e in input_data.evidence) or "(žádné důkazy)"
+        context_text = "\n".join(
+            f"- {key}: {value}" for key, value in input_data.context.items()
+            if key not in {"framing", "evidence", "diagnosis", "solution"} and value
+        ) or "(další kontext neuveden)"
         user_prompt = (
-            f"Rozsah případu: {input_data.scope}\n\n"
+            f"Rozsah případu: {input_data.scope}\n"
+            f"Kontext případu:\n{context_text}\n\n"
             f"Dostupné důkazy:\n{evidence_text}\n\n"
             "Vrať JSON s klíči: root_causes (seznam kořenových příčin), "
             "contributing_factors (seznam přispívajících faktorů), confidence (0.0–1.0)."
