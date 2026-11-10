@@ -90,6 +90,12 @@ def _build_case_1() -> GoldenCase:
             "employee_role": "product manager",
             "problem_area": "dashboard UX, adoption",
             "timeline": "6 mesicu od launchu",
+            "quant_inputs": {
+                "investment": 100000,
+                "annual_return": 30000,
+                "years": 5,
+                "discount_rate": 0.08,
+            },
         },
         plan=[
             "framer: definice rozsahu pripadu",
@@ -134,6 +140,8 @@ def _build_case_1() -> GoldenCase:
     )
 
     return case
+    return case
+
 def _build_case_2() -> GoldenCase:
     """Pripad 2: Dodavatel - nespolehlive dodaci ve vite logistiky."""
     case = GoldenCase(
@@ -146,6 +154,12 @@ def _build_case_2() -> GoldenCase:
             "employee_role": "supply chain manager",
             "problem_area": "delivery reliability, safety stock",
             "timeline": "12 mesicu",
+            "quant_inputs": {
+                "investment": 200000,
+                "annual_return": 50000,
+                "years": 4,
+                "discount_rate": 0.06,
+            },
         },
         plan=[
             "framer: definice rozsahu pripadu",
@@ -190,6 +204,8 @@ def _build_case_2() -> GoldenCase:
     )
 
     return case
+    return case
+
 def _build_case_3() -> GoldenCase:
     """Pripad 3: Vzdelavaci spolecnost - nedostatecna podpora zamestnancu."""
     case = GoldenCase(
@@ -202,6 +218,12 @@ def _build_case_3() -> GoldenCase:
             "employee_role": "L&D manager",
             "problem_area": "learning adoption, upsell",
             "timeline": "8 mesicu",
+            "quant_inputs": {
+                "investment": 50000,
+                "annual_return": 20000,
+                "years": 3,
+                "discount_rate": 0.05,
+            },
         },
         plan=[
             "framer",
@@ -244,8 +266,196 @@ def _build_case_3() -> GoldenCase:
         roi=6.2,
         confidence=0.5,
     )
-
     return case
+
+
+def _build_case_4() -> GoldenCase:
+    """Pripad 4: Maloobchod / e-shop - vysoka mira vraceni zbozi."""
+    case = GoldenCase(
+        case_id=f"case-004-{THIS_YEAR}",
+        title="Vysoka mira vraceni zbozi v e-shopu",
+        tenant_id="tenant-retail",
+        context={
+            "company_size": "50-200 zamestnancu",
+            "industry": "e-commerce / maloobchod",
+            "employee_role": "operations manager",
+            "problem_area": "vratky zbozi, marze",
+            "timeline": "12 mesicu",
+        },
+        plan=[
+            "framer: definice rozsahu pripadu",
+            "diagnostician: analyza korenovych pricin",
+            "evidence_retriever: vyhledavani v znalostni bazi",
+            "solution_designer: navrh reseni",
+            "verifier: overeni tvrzeni",
+        ],
+    )
+
+    case.add_claim(
+        text="12 % objednavek je vraceno do 14 dnu od doruceni.",
+        source="client_data",
+        evidence="Anonymizovana data objednavkovaciho systemu (order ID, vratka, datum).",
+        confidence=0.9,
+    )
+    case.add_claim(
+        text="Nejcastejsi duvod vratky je nesedi velikost obleceni.",
+        source="work_model",
+        evidence="WorkModel proces reklamaci a vratky, trida 'size-fit'.",
+        assumption=False,
+    )
+    case.add_claim(
+        text="Virtualni zkouseni velikosti snizí vratky o 40 %.",
+        source="assumption",
+        evidence=None,
+        assumption=True,
+        confidence=0.55,
+    )
+
+    case.add_recommendation(
+        text="Pridani detailni velikostni tabulky a uzivatelskych recenzi s timem postavy.",
+        basis_claim_ids=[1, 2],
+        roi=8.4,
+        confidence=0.6,
+    )
+    case.add_recommendation(
+        text="Pilot virtualniho zkouseni velikosti v jedne kategorii zbozi.",
+        basis_claim_ids=[1, 3],
+        roi=12.1,
+        confidence=0.5,
+    )
+    case.context["quant_inputs"] = {
+        "investment": 350000,
+        "annual_return": 90000,
+        "years": 3,
+        "discount_rate": 0.10,
+    }
+    return case
+
+def _build_case_5() -> GoldenCase:
+    """Pripad 5: Logistika - nizka vytizenost vozoveho parku."""
+    case = GoldenCase(
+        case_id=f"case-005-{THIS_YEAR}",
+        title="Nizka vytizenost vozoveho parku",
+        tenant_id="tenant-logist",
+        context={
+            "company_size": "100-300 zamestnancu",
+            "industry": "logistika a doprava",
+            "employee_role": "fleet manager",
+            "problem_area": "vytizenost vozu, najete kilometry",
+            "timeline": "9 mesicu",
+        },
+        plan=[
+            "framer: definice rozsahu pripadu",
+            "diagnostician: analyza korenovych pricin",
+            "evidence_retriever: vyhledavani v znalostni bazi",
+            "solution_designer: navrh reseni",
+            "verifier: overeni tvrzeni",
+        ],
+    )
+
+    case.add_claim(
+        text="Prumerna vytizenost vozu je 58 %.",
+        source="client_data",
+        evidence="Telematika vozu, anonymizovane najete kilometry vs. kapacita.",
+        confidence=0.85,
+    )
+    case.add_claim(
+        text="Optimalizace tras snizuje najete kilometry o 10-15 %.",
+        source="work_model",
+        evidence="WorkModel proces planovani tras, mechanismus 'route-consolidation'.",
+        assumption=False,
+    )
+    case.add_claim(
+        text="Elektromobily snizí provozni naklady o 30 %.",
+        source="assumption",
+        evidence=None,
+        assumption=True,
+        confidence=0.5,
+    )
+
+    case.add_recommendation(
+        text="Zavedeni softwaru na optimalizaci tras s denni planovacidou.",
+        basis_claim_ids=[1, 2],
+        roi=14.2,
+        confidence=0.65,
+    )
+    case.add_recommendation(
+        text="Postupna obmena vozu za elektromobily na kratkych trasach.",
+        basis_claim_ids=[1, 3],
+        roi=6.8,
+        confidence=0.45,
+    )
+    case.context["quant_inputs"] = {
+        "investment": 1200000,
+        "annual_return": 250000,
+        "years": 5,
+        "discount_rate": 0.08,
+    }
+    return case
+
+def _build_case_6() -> GoldenCase:
+    """Pripad 6: Profesionalni sluzby - nizka realizace fakturace."""
+    case = GoldenCase(
+        case_id=f"case-006-{THIS_YEAR}",
+        title="Nizka realizace fakturace u konzultacnich sluzeb",
+        tenant_id="tenant-servis",
+        context={
+            "company_size": "30-100 zamestnancu",
+            "industry": "poradenstvi / profesionalni sluzby",
+            "employee_role": "operations manager",
+            "problem_area": "fakturace odpracovanych hodin, time tracking",
+            "timeline": "6 mesicu",
+        },
+        plan=[
+            "framer: definice rozsahu pripadu",
+            "diagnostician: analyza korenovych pricin",
+            "evidence_retriever: vyhledavani v znalostni bazi",
+            "solution_designer: navrh reseni",
+            "verifier: overeni tvrzeni",
+        ],
+    )
+
+    case.add_claim(
+        text="Pouze 72 % odpracovanych hodin je fakturováno klientum.",
+        source="client_data",
+        evidence="System time trackingu a fakturace, anonymizovane.",
+        confidence=0.8,
+    )
+    case.add_claim(
+        text="Tykdenni uzavirka casove evidence zlepsuje realizaci.",
+        source="work_model",
+        evidence="WorkModel proces time tracking, mechanismus 'weekly-closure'.",
+        assumption=False,
+    )
+    case.add_claim(
+        text="Automaticke pripomenuti nenaplanovaného casu zvysi fakturaci o 12 %.",
+        source="assumption",
+        evidence=None,
+        assumption=True,
+        confidence=0.5,
+    )
+
+    case.add_recommendation(
+        text="Zavedeni tydenni uzavirky casove evidence s schvalenim vedoucim.",
+        basis_claim_ids=[1, 2],
+        roi=10.5,
+        confidence=0.6,
+    )
+    case.add_recommendation(
+        text="Automaticke pripomenuti k doplneni casu v systemu.",
+        basis_claim_ids=[1, 3],
+        roi=5.3,
+        confidence=0.45,
+    )
+    case.context["quant_inputs"] = {
+        "investment": 80000,
+        "annual_return": 40000,
+        "years": 2,
+        "discount_rate": 0.09,
+    }
+    return case
+    return case
+
 
 
 def get_golden_cases() -> list[GoldenCase]:
@@ -254,6 +464,9 @@ def get_golden_cases() -> list[GoldenCase]:
     GOLDEN_CASES.append(_build_case_1())
     GOLDEN_CASES.append(_build_case_2())
     GOLDEN_CASES.append(_build_case_3())
+    GOLDEN_CASES.append(_build_case_4())
+    GOLDEN_CASES.append(_build_case_5())
+    GOLDEN_CASES.append(_build_case_6())
     return GOLDEN_CASES
 
 

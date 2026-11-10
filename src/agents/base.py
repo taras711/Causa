@@ -94,9 +94,9 @@ class BaseAgent(ABC, Generic[InputT, OutputT]):
         import ollama
 
         try:
-            response = ollama.chat(
+            client = ollama.Client(host=self.ollama_base_url)
+            response = client.chat(
                 model=self.model_name,
-                base_url=self.ollama_base_url,
                 messages=[
                     {"role": "system", "content": system_prompt},
                     {"role": "user", "content": user_prompt},
@@ -106,7 +106,7 @@ class BaseAgent(ABC, Generic[InputT, OutputT]):
                     "num_predict": max_tokens,
                 },
             )
-            content = response.get("message", {}).get("content", "")
+            content = getattr(getattr(response, "message", None), "content", "") or ""
             logger.debug(
                 "ollama_call",
                 agent=self.name,
@@ -137,9 +137,9 @@ class BaseAgent(ABC, Generic[InputT, OutputT]):
         import ollama
 
         try:
-            response = ollama.chat(
+            client = ollama.Client(host=self.ollama_base_url)
+            response = client.chat(
                 model=self.model_name,
-                base_url=self.ollama_base_url,
                 messages=[
                     {"role": "system", "content": system_prompt},
                     {"role": "user", "content": user_prompt},
@@ -150,7 +150,7 @@ class BaseAgent(ABC, Generic[InputT, OutputT]):
                     "num_predict": max_tokens,
                 },
             )
-            content = response.get("message", {}).get("content", "{}")
+            content = getattr(getattr(response, "message", None), "content", "{}") or "{}"
             return json.loads(content)
         except Exception as exc:
             logger.error(

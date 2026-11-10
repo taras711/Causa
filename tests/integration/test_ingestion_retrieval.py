@@ -2,6 +2,10 @@
 
 from __future__ import annotations
 
+import asyncio
+import tempfile
+from pathlib import Path
+
 import pytest
 
 from src.knowledge.anonymization import Anonymizer
@@ -9,12 +13,21 @@ from src.knowledge.ingestion import IngestionPipeline
 from src.knowledge.retrieval import HybridRetriever
 
 
+def _make_retriever() -> HybridRetriever:
+    """Vytvoří retriever s vlastní dočasnou databází (izolace testů)."""
+    tmp = tempfile.mkdtemp()
+    return HybridRetriever(
+        db_path=str(Path(tmp) / "retrieval.db"),
+        embedding_model="nomic-embed-text",
+    )
+
+
 class TestIngestionRetrievalRoundtrip:
     """Dokument projde anonymizací, uloží se a je následně vyhledatelný."""
 
     @pytest.mark.asyncio
     async def test_ingested_document_is_searchable(self) -> None:
-        retriever = HybridRetriever()
+        retriever = _make_retriever()
         pipeline = IngestionPipeline(retriever=retriever)
 
         document = {
@@ -33,7 +46,7 @@ class TestIngestionRetrievalRoundtrip:
 
     @pytest.mark.asyncio
     async def test_top_k_limits_results(self) -> None:
-        retriever = HybridRetriever()
+        retriever = _make_retriever()
         pipeline = IngestionPipeline(retriever=retriever)
 
         for i in range(5):
@@ -50,7 +63,7 @@ class TestIngestionRetrievalRoundtrip:
 
     @pytest.mark.asyncio
     async def test_empty_query_returns_empty(self) -> None:
-        retriever = HybridRetriever()
+        retriever = _make_retriever()
         pipeline = IngestionPipeline(retriever=retriever)
 
         await pipeline.ingest({"title": "Jeden", "content": "nějaký obsah", "category": "x"})
@@ -60,7 +73,7 @@ class TestIngestionRetrievalRoundtrip:
 
     @pytest.mark.asyncio
     async def test_search_with_no_matches_returns_empty(self) -> None:
-        retriever = HybridRetriever()
+        retriever = _make_retriever()
         pipeline = IngestionPipeline(retriever=retriever)
 
         await pipeline.ingest({"title": "Jeden", "content": "unikatni obsah", "category": "x"})
@@ -70,7 +83,7 @@ class TestIngestionRetrievalRoundtrip:
 
     @pytest.mark.asyncio
     async def test_anonymizer_is_applied_before_indexing(self) -> None:
-        retriever = HybridRetriever()
+        retriever = _make_retriever()
         pipeline = IngestionPipeline(retriever=retriever)
 
         document = {
@@ -82,7 +95,8 @@ class TestIngestionRetrievalRoundtrip:
 
         # Obsah v indexu musí být anonymizován
         indexed = retriever.get_all()[0]
-        assert "secret@firma.cz" not in str(indexed)
-        assert "ABC123456" not in str(indexed)
-        assert "[REDACTED_EMAIL]" in str(indexed)
-        assert "[REDACTED_ID]" in str(indexed)
+        indexed_str = str(indexed)
+        assert "secret@firma.cz" not in indexed_str
+        assert "ABC123456" not in indexed_str
+        assert "[REDACTED_EMAIL]" in indexed_str
+        assert "[REDACTED_ID]" in indexed_str

@@ -1,0 +1,17 @@
+body {
+    font-family: system-ui, -apple-system, sans-serif;
+    background: #fafafa;
+    margin: 0;
+    padding: 0;
+}
+
+h1 {
+    color: #333;
+    text-align: center;
+}
+
+p {
+    color: #676;
+    text-align: center;
+    margin-bottom: 2rem;
+}

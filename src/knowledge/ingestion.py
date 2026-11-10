@@ -1,4 +1,4 @@
-"""A3 ingestion pipeline – import a zpracování A3 dokumentů do znalostní báze.
+﻿"""A3 ingestion pipeline – import a zpracování A3 dokumentů do znalostní báze.
 
 Pipeline přijímá surový obsah (text, markdown, JSON), rozdělí jej na chunky,
 vytvoří z nich FaceModel záznamy a naindexuje je pro hybridní retrieval.
@@ -243,7 +243,9 @@ class A3Ingestor:
                 applicable_to=[tenant_id],
                 tags=["ingested", "a3"],
             )
-            face_models.append(FaceModelResponse(**face_create.model_dump()))
+            data = face_create.model_dump()
+            data["curated"] = False
+            face_models.append(FaceModelResponse(**data))
 
         return face_models
 
@@ -372,3 +374,4 @@ class A3Ingestor:
 # Zpětně kompatibilní alias pro testy a existující volající, kteří očekávají
 # název IngestionPipeline (původní název třídy před přejmenováním na A3Ingestor).
 IngestionPipeline = A3Ingestor
+

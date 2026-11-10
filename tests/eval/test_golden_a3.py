@@ -21,6 +21,7 @@ from src.agents.solution_designer import (
     SolutionDesignerInput,
 )
 from src.agents.verifier import VerifierAgent, VerifierInput
+from src.quant.engine import QuantEngine
 
 from tests.eval.conftest import GOLDEN_CASES, make_golden_case
 
@@ -128,8 +129,15 @@ async def test_golden_case_diagnostician_produces_root_causes(
 async def test_golden_case_solution_designer_produces_solutions(
     mocked_ollama_responses,
 ) -> None:
-    """Zlatý případ 001: Solution Designer navrhuje řešení s ROI."""
+    """Zlatý případ 001: Solution Designer navrhuje řešení; ROI pochází deterministicky z Quant Enginu, never z LLM."""
     agent = SolutionDesignerAgent()
+    quant_inputs = {
+        "investment": 100000,
+        "annual_return": 30000,
+        "years": 5,
+        "discount_rate": 0.08,
+    }
+    expected_roi = QuantEngine().compute_roi(quant_inputs)["roi"]
 
     with patch.object(
         agent,
@@ -141,12 +149,25 @@ async def test_golden_case_solution_designer_produces_solutions(
             SolutionDesignerInput(
                 root_causes=["Neefektivní schvalovací proces"],
                 evidence=["Procesní analýza"],
+                claims=[
+                    {"id": 1, "text": "Náklady vzrostly o 15 %", "source": "client_data", "evidence": "Finanční výkaz 2024"},
+                    {"id": 2, "text": "Příčina je v procesu", "source": "work_model", "assumption": False},
+                    {"id": 3, "text": "Řešení pomůže", "source": "assumption", "assumption": True},
+                ],
+                verification_levels=["verified", "verified", "unverified"],
+                agreement=0.6,
+                quant_inputs=quant_inputs,
             )
         )
 
     assert len(result.solutions) >= 1
-    assert result.estimated_roi is not None
+    # estimated_roi je výsledek Quant Enginu pro dané vstupy, nikoli LLM odhad (mock vrací 18.5).
+    assert result.estimated_roi == expected_roi
+    assert result.quant_result is not None
+    assert result.quant_result["status"] == "ok"
     assert 0.0 <= result.confidence <= 1.0
+    assert result.confidence_basis is not None
+    assert result.confidence_basis["calibrated"] is False
 
 
 @pytest.mark.asyncio

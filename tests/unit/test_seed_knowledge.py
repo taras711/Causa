@@ -55,7 +55,18 @@ def test_seed_records_do_not_leak_pii() -> None:
 async def test_seed_ingestion_accepts_all_records() -> None:
     """Ingestní pipeline přijme všechny seed záznamy (pilot readiness)."""
     records = _load_records()
-    pipeline = IngestionPipeline()
+    # Vytvoříme vlastní retriever s dočasnou databází pro izolaci testu
+    import tempfile
+    from pathlib import Path
+
+    from src.knowledge.retrieval import HybridRetriever
+
+    tmp = tempfile.mkdtemp()
+    retriever = HybridRetriever(
+        db_path=str(Path(tmp) / "retrieval.db"),
+        embedding_model="neexistujici-model",
+    )
+    pipeline = IngestionPipeline(retriever=retriever)
     result = await pipeline.ingest_batch(records)
     assert result["status"] == "batch_ingested"
     assert result["count"] == len(records)

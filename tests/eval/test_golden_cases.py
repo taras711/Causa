@@ -5,11 +5,19 @@ from __future__ import annotations
 from tests.eval.golden_cases import get_golden_cases, get_snapshots, to_snapshot
 
 
-def test_golden_cases_load_three_cases() -> None:
+def test_golden_cases_load_six_cases() -> None:
     cases = get_golden_cases()
-    assert len(cases) == 3
+    assert len(cases) == 6
     case_ids = {c.case_id for c in cases}
-    assert case_ids == {"case-001-2026", "case-002-2026", "case-003-2026"}
+    assert case_ids == {f"case-00{i}-2026" for i in range(1, 7)}
+
+
+def test_every_golden_case_has_quant_inputs() -> None:
+    """Kazdy zvlaty pripad musi mit deterministické vstupy pro Quant Engine."""
+    for case in get_golden_cases():
+        q = case.context.get("quant_inputs")
+        assert q is not None, f"{case.case_id}: chybí quant_inputs"
+        assert set(q) >= {"investment", "annual_return", "years", "discount_rate"}
 
 
 def test_golden_case_has_required_metadata() -> None:

@@ -1,27 +1,40 @@
-"""Diagnostician – A3 logika, analýza příčin."""
+"""Diagnostician – A3 logika, analýza příčin.
+
+Confidence není sebereflexe LLM, ale deterministické složené skóre
+z vlastností důkazů (ConfidenceCalculator).
+"""
 from __future__ import annotations
 
 from pydantic import BaseModel, Field
 
 from src.agents.base import AutonomyLevel, BaseAgent
+from src.quant.confidence import ConfidenceCalculator
 
 
 class DiagnosticianInput(BaseModel):
     scope: str
     evidence: list[str] = Field(default_factory=list)
     context: dict = Field(default_factory=dict)
+    # Claimy ze Case se zdroji (work_model | client_data | face_model | assumption).
+    claims: list[dict] = Field(default_factory=list)
+    # Verifikační úrovně odpovídající claimům (verified | partial | unverified).
+    verification_levels: list[str] = Field(default_factory=list)
+    # Shoda napříč během / modely pro stejné tvrzení [0, 1].
+    agreement: float = Field(0.0, ge=0.0, le=1.0)
 
 
 class DiagnosticianOutput(BaseModel):
     root_causes: list[str] = Field(..., description="Identifikované kořenové příčiny")
     contributing_factors: list[str] = Field(default_factory=list)
     confidence: float = Field(0.5, ge=0.0, le=1.0)
+    confidence_basis: dict | None = None
 
 
 class DiagnosticianAgent(BaseAgent[DiagnosticianInput, DiagnosticianOutput]):
     """Analýza příčin (root cause analysis) pro definovaný rozsah případu.
 
-    Používá velký model (qwen3:14b) pro uvažování a syntézu.
+    Používá velký model (qwen3:14b) pro uvažování a syntézu. Confidence je
+    počítáno deterministicky ze vlastností důkazů, nikoliv jako LLM sebereflexe.
     """
 
     def __init__(self, **kwargs) -> None:
@@ -35,6 +48,7 @@ class DiagnosticianAgent(BaseAgent[DiagnosticianInput, DiagnosticianOutput]):
                 "ollama_base_url", "http://localhost:11434"
             ),
         )
+        self._confidence = ConfidenceCalculator()
 
     async def run(self, input_data: DiagnosticianInput) -> DiagnosticianOutput:
         system_prompt = (
@@ -52,7 +66,7 @@ class DiagnosticianAgent(BaseAgent[DiagnosticianInput, DiagnosticianOutput]):
             f"Kontext případu:\n{context_text}\n\n"
             f"Dostupné důkazy:\n{evidence_text}\n\n"
             "Vrať JSON s klíči: root_causes (seznam kořenových příčin), "
-            "contributing_factors (seznam přispívajících faktorů), confidence (0.0–1.0)."
+            "contributing_factors (seznam přispívajících faktorů)."
         )
 
         result = await self._call_ollama_json(
@@ -62,8 +76,20 @@ class DiagnosticianAgent(BaseAgent[DiagnosticianInput, DiagnosticianOutput]):
             max_tokens=4096,
         )
 
+        components = ConfidenceCalculator.from_claims(
+            claims=input_data.claims,
+            levels=input_data.verification_levels,
+            agreement=input_data.agreement,
+        )
+        scored = self._confidence.score(components)
+
         return DiagnosticianOutput(
             root_causes=result.get("root_causes", []),
             contributing_factors=result.get("contributing_factors", []),
-            confidence=max(0.0, min(1.0, result.get("confidence", 0.5))),
+            confidence=round(scored["confidence"], 4),
+            confidence_basis={
+                "components": scored["components"],
+                "weights": scored["weights"],
+                "calibrated": scored["calibrated"],
+            },
         )

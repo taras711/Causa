@@ -34,7 +34,7 @@ def test_diagnostician_agent_defaults() -> None:
     agent = DiagnosticianAgent()
     assert agent.name == "Diagnostician"
     assert agent.autonomy.value == "L1"
-    assert agent.model_name == "qwen2.5:14b"
+    assert agent.model_name == "qwen3:14b"
 
 
 def test_diagnostician_confidence_out_of_range_raises() -> None:

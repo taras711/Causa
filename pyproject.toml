@@ -60,6 +60,7 @@ markers = [
     "integration: integrační testy",
     "eval: evaluační testy (zlaté případy)",
     "security: bezpečnostní testy",
+    "smoke: fumée testy proti živému modelu (vyžadují Ollama)",
 ]
 
 [tool.ruff]

@@ -3,8 +3,11 @@
 from __future__ import annotations
 
 import asyncio
+import tempfile
+from pathlib import Path
 
 from src.knowledge.ingestion import IngestionPipeline
+from src.knowledge.retrieval import HybridRetriever
 
 
 def test_ingest_anonymizes_before_store() -> None:
@@ -21,15 +24,20 @@ def test_ingest_anonymizes_before_store() -> None:
 
 
 def test_ingest_batch_count() -> None:
-    pipeline = IngestionPipeline()
-    docs = [
-        {"title": f"D{i}", "content": f"obsah {i}", "source": "s"} for i in range(3)
-    ]
+    # Každý test musí pracovat s vlastní izolovanou databází, aby výsledek
+    # nezávisel na dokumentech vložených předchozími testy do sdílené
+    # data/retrieval.db.
+    with tempfile.TemporaryDirectory() as tmp:
+        retriever = HybridRetriever(db_path=str(Path(tmp) / "retrieval.db"))
+        pipeline = IngestionPipeline(retriever=retriever)
+        docs = [
+            {"title": f"D{i}", "content": f"obsah {i}", "source": "s"} for i in range(3)
+        ]
 
-    async def _run() -> dict:
-        return await pipeline.ingest_batch(docs)
+        async def _run() -> dict:
+            return await pipeline.ingest_batch(docs)
 
-    result = asyncio.run(_run())
-    assert result["status"] == "batch_ingested"
-    assert result["count"] == 3
-    assert len(pipeline.retriever.get_all()) == 3
+        result = asyncio.run(_run())
+        assert result["status"] == "batch_ingested"
+        assert result["count"] == 3
+        assert len(pipeline.retriever.get_all()) == 3

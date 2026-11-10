@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import asyncio
 import tempfile
 from pathlib import Path
 from unittest.mock import patch
@@ -52,7 +53,7 @@ def test_add_document_and_keyword_search(
         }
     )
 
-    results = retriever_tmp.keyword_search("náklady automatizace", top_k=5)
+    results = asyncio.run(retriever_tmp.keyword_search("náklady automatizace", top_k=5))
     assert len(results) == 1
     assert results[0]["id"] == "doc-1"
 
@@ -79,7 +80,7 @@ def test_hybrid_search_returns_relevant_documents(
         }
     )
 
-    results = retriever_tmp.hybrid_search("plýtvání procesy", top_k=5)
+    results = asyncio.run(retriever_tmp.hybrid_search("plýtvání procesy", top_k=5))
     assert len(results) >= 1
     # První výsledek by měl být ten s "plýtvání" a "procesy"
     assert results[0]["id"] == "doc-1"
@@ -102,7 +103,7 @@ def test_semantic_search(mock_embeddings) -> None:
             }
         )
 
-    results = retriever.semantic_search("optimalizace", top_k=5)
+    results = asyncio.run(retriever.semantic_search("optimalizace", top_k=5))
     assert len(results) == 1
     assert results[0]["id"] == "doc-1"
 
@@ -121,7 +122,7 @@ def test_search_uses_hybrid_by_default(
         }
     )
 
-    results = retriever_tmp.search("obsah vyhledávání", top_k=5)
+    results = asyncio.run(retriever_tmp.search("obsah vyhledávání", top_k=5))
     assert len(results) == 1
     assert results[0]["id"] == "doc-1"
 
@@ -131,7 +132,7 @@ def test_empty_search_returns_empty_list(
 ) -> None:
     """Vyhledávání v prázdném indexu vrací prázdný seznam."""
 
-    results = retriever_tmp.search("cokoliv", top_k=5)
+    results = asyncio.run(retriever_tmp.search("cokoliv", top_k=5))
     assert results == []
 
 
@@ -164,7 +165,7 @@ def test_persistence_survives_reinit(mock_embeddings) -> None:
             db_path=db_path, embedding_model="nomic-embed-text"
         )
 
-    results = retriever3.keyword_search("trvalý dokument", top_k=5)
+    results = asyncio.run(retriever3.keyword_search("trvalý dokument", top_k=5))
     assert len(results) == 1
     assert results[0]["id"] == "persistent-doc"
 

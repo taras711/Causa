@@ -1,6 +1,8 @@
 ﻿"""Bezpečnostní testy pro HybridRetriever."""
+
 from __future__ import annotations
 
+import asyncio
 import tempfile
 from pathlib import Path
 
@@ -9,65 +11,75 @@ import pytest
 from src.knowledge.retrieval import HybridRetriever
 
 
-@pytest.fixture
-def retriever_tmp() -> HybridRetriever:
-    with tempfile.TemporaryDirectory() as tmp:
-        db_path = Path(tmp) / "retrieval.db"
-        yield HybridRetriever(db_path=str(db_path), embedding_model="neexistujici-model")
+def _make_retriever() -> HybridRetriever:
+    """Vytvoří retriever s vlastní dočasnou databází (izolace testů)."""
+    tmp = tempfile.mkdtemp()
+    return HybridRetriever(
+        db_path=str(Path(tmp) / "retrieval.db"),
+        embedding_model="neexistujici-model",
+    )
 
 
 @pytest.mark.security
-def test_search_empty_query_does_not_crash(retriever_tmp: HybridRetriever) -> None:
-    res = retriever_tmp.search("")
+def test_search_empty_query_does_not_crash() -> None:
+    retriever = _make_retriever()
+    res = asyncio.run(retriever.search(""))
     assert isinstance(res, list)
 
 
 @pytest.mark.security
-def test_search_non_str_query_does_not_crash(retriever_tmp: HybridRetriever) -> None:
+def test_search_non_str_query_does_not_crash() -> None:
+    retriever = _make_retriever()
     try:
-        res = retriever_tmp.search(123)  # type: ignore[arg-type]
+        res = asyncio.run(retriever.search(123))  # type: ignore[arg-type]
     except (TypeError, AttributeError):
         return
     assert isinstance(res, list)
 
 
 @pytest.mark.security
-def test_hybrid_search_top_k_negative_does_not_crash(retriever_tmp: HybridRetriever) -> None:
-    retriever_tmp.add_document({"id": "d1", "title": "t", "content": "c", "source": "s"})
-    res = retriever_tmp.hybrid_search("q", top_k=-1)
+def test_hybrid_search_top_k_negative_does_not_crash() -> None:
+    retriever = _make_retriever()
+    retriever.add_document({"id": "d1", "title": "t", "content": "c", "source": "s"})
+    res = asyncio.run(retriever.hybrid_search("q", top_k=-1))
     assert isinstance(res, list)
 
 
 @pytest.mark.security
-def test_hybrid_search_top_k_huge_does_not_crash(retriever_tmp: HybridRetriever) -> None:
-    retriever_tmp.add_document({"id": "d1", "title": "t", "content": "c", "source": "s"})
-    res = retriever_tmp.hybrid_search("q", top_k=10_000)
+def test_hybrid_search_top_k_huge_does_not_crash() -> None:
+    retriever = _make_retriever()
+    retriever.add_document({"id": "d1", "title": "t", "content": "c", "source": "s"})
+    res = asyncio.run(retriever.hybrid_search("q", top_k=10_000))
     assert isinstance(res, list)
 
 
 @pytest.mark.security
-def test_add_document_injection_id_does_not_execute(retriever_tmp: HybridRetriever) -> None:
+def test_add_document_injection_id_does_not_execute() -> None:
+    retriever = _make_retriever()
     evil = "'; DROP TABLE retrieval_documents; --"
-    retriever_tmp.add_document({"id": evil, "title": "t", "content": "c"})
+    retriever.add_document({"id": evil, "title": "t", "content": "c"})
     # Dokument je uložen jako data, ne vykonán
-    assert any(d.get("id") == evil for d in retriever_tmp.get_all())
+    assert any(d.get("id") == evil for d in retriever.get_all())
 
 
 @pytest.mark.security
-def test_add_document_none_values_does_not_crash(retriever_tmp: HybridRetriever) -> None:
-    retriever_tmp.add_document({"id": None, "title": None, "content": None})
-    assert isinstance(retriever_tmp.get_all(), list)
+def test_add_document_none_values_does_not_crash() -> None:
+    retriever = _make_retriever()
+    retriever.add_document({"id": None, "title": None, "content": None})
+    assert isinstance(retriever.get_all(), list)
 
 
 @pytest.mark.security
-def test_keyword_search_empty_index(retriever_tmp: HybridRetriever) -> None:
-    res = retriever_tmp.keyword_search("anything")
+def test_keyword_search_empty_index() -> None:
+    retriever = _make_retriever()
+    res = asyncio.run(retriever.keyword_search("anything"))
     assert res == []
 
 
 @pytest.mark.security
-def test_semantic_search_empty_index(retriever_tmp: HybridRetriever) -> None:
-    res = retriever_tmp.semantic_search("anything")
+def test_semantic_search_empty_index() -> None:
+    retriever = _make_retriever()
+    res = asyncio.run(retriever.semantic_search("anything"))
     assert res == []
 
 

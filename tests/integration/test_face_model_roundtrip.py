@@ -22,45 +22,33 @@ class TestFaceModelSchemas:
 
     def test_face_model_create_requires_minimal_fields(self) -> None:
         create = FaceModelCreate(
-            title="Příklad optimalizace",
-            context={
-                "industry": "e-commerce",
-                "company_size": "200-500",
-                "employee_role": "product manager",
-                "problem_area": "dashboard UX",
-                "timeline": "6 mesicu",
-            },
-            problem={"title": "Nízká adopce", "description": "Uživatelé nepožívají dashboard"},
-            source="interní",
+            name="Příklad optimalizace",
+            company_context="Střední výrobní firma, automotive",
+            mechanism="Eliminace plýtvání (muda) prostřednictvím kontinuálního zlepšování",
         )
-        assert create.title == "Příklad optimalizace"
-        assert create.source == "interní"
-        assert create.root_causes == []
-        assert create.solutions == []
+        assert create.name == "Příklad optimalizace"
+        assert create.company_context == "Střední výrobní firma, automotive"
+        assert "muda" in create.mechanism
+        assert create.evidence is None
+        assert create.applicable_to == []
+        assert create.tags == []
 
     def test_face_model_response_adds_ids_and_timestamps(self) -> None:
         create = FaceModelCreate(
-            title="Test",
-            context={
-                "industry": "it",
-                "company_size": "malá",
-                "employee_role": "vývojář",
-                "problem_area": "test",
-                "timeline": "1 mesic",
-            },
-            problem={"title": "Problém", "description": "Popis"},
-            source="test",
+            name="Test",
+            company_context="Testovací kontext",
+            mechanism="Testovací mechanismus",
         )
         response = FaceModelResponse(
-            face_model_id=create.face_model_id if hasattr(create, "face_model_id") else __import__("uuid").uuid4(),
-            created_at=create.created_at if hasattr(create, "created_at") else __import__("datetime").datetime.now(),
-            updated_at=create.updated_at if hasattr(create, "updated_at") else __import__("datetime").datetime.now(),
             **create.model_dump(exclude_unset=True),
         )
-        assert response.face_model_id is not None
+        assert response.model_id is not None
         assert response.created_at is not None
-        assert response.updated_at is not None
-        assert response.title == "Test"
+        # updated_at je při počátečním vytvoření None (nastavuje se až při updatu)
+        assert response.updated_at is None
+        assert response.name == "Test"
+        assert response.curated is False
+        assert response.accuracy_score is None
 
     def test_full_face_model_includes_all_sections(self) -> None:
         model = FaceModel(

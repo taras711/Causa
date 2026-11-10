@@ -220,7 +220,7 @@ class HybridRetriever:
 
         VĂˇha: 40 % klĂ­ÄŤovĂˇ slova, 60 % sĂ©mantickĂˇ podobnost.
         """
-        return self.hybrid_search(query, top_k=top_k)
+        return await self.hybrid_search(query, top_k=top_k)
 
     async def hybrid_search(
         self,
@@ -291,3 +291,4 @@ class HybridRetriever:
 
     def get_all(self) -> list[dict[str, Any]]:
         return list(self._documents)
+

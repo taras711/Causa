@@ -29,7 +29,7 @@ def test_framer_agent_defaults() -> None:
     agent = FramerAgent()
     assert agent.name == "Framer"
     assert agent.autonomy.value == "L1"
-    assert agent.model_name == "qwen2.5:3b"
+    assert agent.model_name == "qwen3.5:4b"
     assert agent.input_schema == FramerInput
     assert agent.output_schema == FramerOutput
 
